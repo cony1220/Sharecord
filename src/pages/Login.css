@@ -1,0 +1,162 @@
+html, body{
+    height: 100%;
+}
+.signin-up-background{
+    position: absolute;
+    top:54px;
+    bottom: 0;
+    width: 100%;
+    background-image: url("https://www.fotobeginner.com/wp-content/uploads/2015/04/lake-sunset-2021-08-26-18-27-36-utc-1.jpg");
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+}
+.content-container{
+    margin: 100px;
+    display: grid;
+    grid-template-columns: 480px 160px 360px;
+    grid-template-rows: 112px 35px 220px;
+    justify-content: center;
+}
+.title{
+    padding-left: 10px;
+    padding-right: 10px;
+    font-size: 48px;
+    font-weight: bold;
+    color: #FFFFFF;
+    grid-row: 1/2;
+    grid-column: 1/2;
+}
+.text{
+    padding-left: 10px;
+    padding-right: 10px;
+    font-size: 20px;
+    color: #FFFFFF;
+    line-height: 29px;
+    grid-row: 3/4;
+    grid-column: 1/2;
+}
+.signin-up-container{
+    background-color: #FFFFFF;
+    box-shadow: 0px 4px 4px rgb(0,0,0,0.25);
+    border-radius: 5px;
+    grid-row: 1/4;
+    grid-column: 3/4;
+}
+.signin-up-option-container{
+    position: relative;
+    height: 46px;
+    display: grid;
+    grid-template-columns: 51px 25px 105px;
+    justify-content: center;
+    align-items: center;
+    border-bottom: #D8D1D1 solid 1px;
+}
+.signin{
+    grid-column: 1/2;
+    cursor: pointer;
+}
+.create-account{
+    grid-column: 3/4;
+    cursor: pointer;
+}
+.signin-bar{
+    position: absolute;
+    left: 88px;
+    bottom:0px;
+    width: 51px;
+    height: 2px;
+    background-color: black;
+}
+.signup-bar{
+    position: absolute;
+    left: 164px;
+    bottom: 0px;
+    width: 105px;
+    height: 2px;
+    background-color: black;
+}
+.signin-status-content-container{
+    padding:10px 25px 32px 25px;
+}
+.signin-status-form-container{
+    display: grid;
+    grid-template-rows: 79px 79px 55px;
+}
+.email-container{
+    grid-row: 1/2;
+    display: grid;
+    grid-template-rows: 24px 55px;
+}
+.email{
+    color: #938E8E;
+    grid-row: 1/2;
+}
+.email-input{
+    padding: 15px;
+    border:#D8D1D1 solid 1px;
+    border-radius: 5px;
+    grid-row: 2/3;
+}
+.password-container{
+    grid-row: 2/3;
+    display: grid;
+    grid-template-rows: 24px 55px;
+}
+.password{
+    color: #938E8E;
+    grid-row: 1/2;
+}
+.password-input{
+    padding: 15px;
+    border:#D8D1D1 solid 1px;
+    border-radius: 5px;
+    grid-row: 2/3;
+}
+.signin-button{
+    color: #FFFFFF;
+    background-color: #14113C;
+    border: 0px;
+    border-radius: 5px;
+    grid-row: 3/4;
+    cursor: pointer;
+}
+.item{
+    margin-bottom: 10px;
+}
+.bar{
+    position: relative;
+    text-align: center;
+}
+.bar::before{
+    content: "";
+    position: absolute;
+    left: 0px;
+    right: 0px;
+    top: 50%;
+    height: 1px;
+    transform: translateY(-50%);
+    background-color: #D8D1D1;
+}
+.word{
+    position: relative;
+    color: #938E8E;
+    padding: 0px 7px;
+    background-color: #FFFFFF;
+}
+.other-signin-methods{
+    height: 41px;
+    display: grid;
+    grid-template-columns: 48px 15px 48px;
+    justify-content: center;
+}
+.signin-with-google{
+    max-width: 100%;
+    grid-column: 1/2;
+    cursor: pointer;
+}
+.signin-with-fb{
+    width: 100%;
+    grid-column: 3/4;
+    cursor: pointer;
+}
