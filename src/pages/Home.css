@@ -1,0 +1,14 @@
+.Home-box{
+    padding-top: 54px;
+    min-height: 100vh;
+}
+.Home-background{
+    height: 250px;
+    background-image: url("https://www.fotobeginner.com/wp-content/uploads/2015/04/lake-sunset-2021-08-26-18-27-36-utc-1.jpg");
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: top;
+}
+.test{
+    height:500px;
+}

@@ -1,5 +1,8 @@
 .Header{
-    position: sticky;
+    position: fixed;
+    width: 100%;
+    background-color: #FFFFFF;
+    z-index: 2;
 }
 .Header-container{
     width: 1200px;

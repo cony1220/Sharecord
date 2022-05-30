@@ -1,0 +1,155 @@
+.Personal-box{
+    padding-top: 54px;
+    width: 100%;
+    min-height: 100vh;
+    position: relative;
+}
+.Personal-background{
+    position: absolute;
+    width: 100%;
+    height: 250px;
+    background-image: url("https://www.fotobeginner.com/wp-content/uploads/2015/04/lake-sunset-2021-08-26-18-27-36-utc-1.jpg");
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: top;
+}
+.Personal-content-box{
+    position: relative;
+    padding: 180px 0px 50px;
+    margin-left: auto;
+    margin-right: auto;
+    width: 1000px;
+}
+.Personal-information-container{
+    width: 880px;
+    margin-left: auto;
+    margin-right: auto;
+    display: grid;
+    grid-template-columns: 140px;
+    grid-template-rows: 140px 30px 30px;
+    justify-items: center;
+    align-items: center;
+}
+.Personal-avatar-container{
+    grid-row: 1/2;
+    padding: 5px;
+    background-color: #FFFFFF;
+    border-radius: 50%;
+    overflow: hidden;
+}
+.Personal-avatar{
+    width: 135px;
+    height: 135px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+.Personal-name{
+    font-weight: bold;
+}
+.Personal-post-count{
+    color: #938E8E;
+}
+.Personal-bar{
+    height: 1px;
+    background-color: #D8D1D1;
+}
+.Personal-post-container{
+    width: 880px;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 20px;
+}
+.Personal-post-box{
+    height: 180px;
+    margin-bottom: 20px;
+    padding: 10px;
+    border-radius: 5px;
+    box-shadow: 4px 4px 4px rgba(0, 0, 0, 0.25);
+}
+.Personal-post-information{
+    width: 220px;
+    display: grid;
+    grid-template-columns: 40px 180px;
+    align-items: center;
+}
+.Personal-post-avatar-container{
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    grid-column: 1/2;
+    overflow: hidden;
+}
+.Personal-post-avatar{
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+.Personal-post-time{
+    color: #938E8E;
+}
+.Personal-post-content-container{
+    height: 120px;
+    display: grid;
+    grid-template-rows: 34px 38px 18px 25px;
+    grid-template-columns: 1fr 30px 120px;
+    align-items: center;
+}
+.Personal-post-title{
+    font-size: 20px;
+    font-weight: bold;
+    grid-row: 1/2;
+    grid-column: 1/2;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+}
+.Personal-post-text{
+    grid-row: 2/3;
+    grid-column: 1/2;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+}
+.Personal-post-like-message-container{
+    grid-row: 4/5;
+    grid-column: 1/2;
+    display: grid;
+    grid-template-columns: repeat(4, 25px);
+    align-items: center;
+    justify-items: center;
+}
+.Personal-post-like{
+    grid-column: 1/2;
+    width: 25px;
+    height: 25px;
+}
+.Personal-post-message{
+    grid-column: 3/4;
+    width: 25px;
+    height: 25px;
+}
+.Personal-post-photo-container{
+    grid-row: 1/5;
+    grid-column: 3/4;
+    width: 120px;
+    height: 120px;
+    overflow: hidden;
+    border-radius: 5px;
+}
+.Personal-post-photo{
+    width: 120px;
+    height: 120px;
+    object-fit: cover;
+}
+@media (max-width: 1000px){
+    .Personal-content-box{
+        width: 90%;
+    }
+    .Personal-information-container{
+        width: 100%;
+    }
+    .Personal-post-container{
+        width: 100%;
+    }
+}
