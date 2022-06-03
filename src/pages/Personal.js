@@ -6,8 +6,8 @@ import {
   collection, getDoc, getDocs, query, where, doc,
 }
   from "firebase/firestore";
-import { db, auth } from "../firebaseConfig";
 import moment from "moment";
+import { db, auth } from "../firebaseConfig";
 
 function Personal() {
   const [currentUser, setCurrentUser] = useState({});
@@ -39,31 +39,35 @@ function Personal() {
       <div className="Personal-content-box">
         <div className="Personal-information-container">
           <div className="Personal-avatar-container">
-            <img className="Personal-avatar" src={pageOwner.photoURL} alt="" />
+            <img className="Personal-avatar" src={pageOwner && pageOwner.photoURL} alt="" />
           </div>
-          <div className="Personal-name">{pageOwner.name}</div>
+          <div className="Personal-name">{pageOwner && pageOwner.name}</div>
           <div className="Personal-post-count">{`${postList.length}篇文章`}</div>
         </div>
         <div className="Personal-bar" />
         <div className="Personal-post-container">
-          {postList.map((item) => (
+          {postList.length > 0 ? postList.map((item) => (
             <Link to={`/post/${item.id}`} key={item.id}>
               <div className="Personal-post-box">
                 <div className="Personal-post-information item">
                   <div className="Personal-post-avatar-container">
                     <img className="Personal-post-avatar" src={item.author.photoURL} alt="" />
                   </div>
-                  <div className="Personal-post-time">{item.categoryName}・{moment(item.createTime.toDate()).format("YYYY/MM/DD h:mm a")}</div>
+                  <div className="Personal-post-time">
+                    {item.categoryName}
+                    ・
+                    {moment(item.createTime.toDate()).format("YYYY/MM/DD h:mm a")}
+                  </div>
                 </div>
                 <div className="Personal-post-content-container">
                   <div className="Personal-post-title">{item.title}</div>
                   <div className="Personal-post-text">{item.pureText}</div>
                   <div className="Personal-post-like-message-container">
-                    <div>
+                    <div className="Personal-post-like-container">
                       <img className="Personal-post-like" src="https://cdn-icons-png.flaticon.com/512/1077/1077035.png" alt="讚" />
                     </div>
                     <div>0</div>
-                    <div>
+                    <div className="Personal-post-message-container">
                       <img className="Personal-post-message" src="https://cdn-icons-png.flaticon.com/128/2462/2462719.png" alt="留言" />
                     </div>
                     <div>0</div>
@@ -76,7 +80,16 @@ function Personal() {
                 </div>
               </div>
             </Link>
-          ))}
+          )) : (
+            <div className="Personal-no-post-container">
+              <div>
+                <div className="Personal-no-post-icon-container">
+                  <img className="Personal-no-post-icon" src="https://cdn-icons-png.flaticon.com/512/817/817864.png" alt="" />
+                </div>
+                <div>No posts here</div>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>

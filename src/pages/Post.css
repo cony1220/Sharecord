@@ -1,0 +1,98 @@
+.Post-box{
+    padding-top: 54px;
+    width: 100%;
+    min-height: 100vh;
+    position: relative;
+}
+.Post-background{
+    position: absolute;
+    width: 100%;
+    height: 250px;
+    background-image: url("https://www.fotobeginner.com/wp-content/uploads/2015/04/lake-sunset-2021-08-26-18-27-36-utc-1.jpg");
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: top;
+}
+.Post-content-box{
+    position: relative;
+    padding: 150px 0px 50px;
+    margin-left: auto;
+    margin-right: auto;
+    width: 1000px;
+    min-height: calc(100vh - 54px);
+}
+.Post-content-container{
+    position: relative;
+    min-height: calc(100vh - 54px - 200px);
+    padding: 20px;
+    background-color: #FFFFFF;
+    border-radius: 5px;
+    box-shadow: 0px 4px 4px rgb(0,0,0,0.25);
+    display: grid;
+    grid-template-rows: 78px 1fr 30px;
+    cursor: default;
+}
+.Post-personal-information{
+    grid-row: 1/2;
+    display: grid;
+    grid-template-columns: 75px 200px;
+    align-items: center;
+}
+.Post-avatar-container{
+    width: 60px;
+    height: 60px;
+    margin-right: 15px;
+    border-radius: 50%;
+    overflow: hidden;
+}
+.Post-avatar{
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+.Post-information-container{
+    display: grid;
+    grid-template-rows: 34px 34px;
+    align-items: center;
+}
+.Post-name{
+    grid-row: 1/2;
+}
+.Post-date{
+    color: #938E8E;
+    grid-row: 2/3;
+}
+.Post-title{
+    font-size: 28px;
+}
+.Post-like-message-container{
+    grid-row: 3/4;
+    display: grid;
+    grid-template-columns: repeat(4, 25px);
+    align-items: center;
+    justify-items: center;
+}
+.Post-like-container{
+    grid-column: 1/2;
+    width: 25px;
+    height: 25px;
+}
+.Post-like{
+    width: 25px;
+    height: 25px;
+}
+.Post-message-container{
+    grid-column: 3/4;
+    width: 25px;
+    height: 25px;
+}
+.Post-message{
+    width: 25px;
+    height: 25px;
+}
+@media (max-width: 1000px){
+    .Post-content-box{
+        width: 90%;
+    }
+}

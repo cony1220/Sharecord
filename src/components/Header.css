@@ -3,6 +3,7 @@
     width: 100%;
     background-color: #FFFFFF;
     z-index: 2;
+    border-bottom: 1px solid #D8D1D1;
 }
 .Header-container{
     width: 1200px;

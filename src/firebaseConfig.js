@@ -5,12 +5,12 @@ import { getStorage } from "firebase/storage";
 
 const firebaseConfig = {
   apiKey: "#",
-  authDomain: "#,
+  authDomain: "#",
   projectId: "#",
   storageBucket: "#",
   messagingSenderId: "#",
   appId: "#",
-  measurementId: "#,
+  measurementId: "#",
 };
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);

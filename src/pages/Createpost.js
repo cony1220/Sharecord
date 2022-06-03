@@ -76,15 +76,19 @@ function Createpost() {
         break;
       }
     }
-    if (editorContent.entityMap[0]) {
-      firstPicture = editorContent.entityMap[0].data.src;
-    } else {
-      firstPicture = "";
+    for (let i = 0; i < Object.keys(editorContent.entityMap).length; i += 1) {
+      if (editorContent.entityMap[i].type === "image") {
+        firstPicture = editorContent.entityMap[i].data.src;
+        break;
+      } else {
+        firstPicture = "";
+      }
     }
     await addDoc(collection(db, "posts"), {
       categoryName,
       title,
-      postText: stateToHTML(editorState.getCurrentContent()),
+      stateContent: JSON.stringify(convertToRaw(editorState.getCurrentContent())),
+      htmlContent: stateToHTML(editorState.getCurrentContent()),
       pureText,
       firstPicture: firstPicture || "",
       likeby: [],
@@ -97,6 +101,9 @@ function Createpost() {
     });
     navigator("/");
   };
+  const show = () => {
+    console.log(convertToRaw(editorState.getCurrentContent()));
+  }
   return (
     <div className="Createpost-box">
       <div className="Createpost-background" />
@@ -117,7 +124,7 @@ function Createpost() {
               <img className="Createpost-avatar" src={user && user.photoURL ? user.photoURL : "https://cdn-icons-png.flaticon.com/512/847/847969.png"} alt="" />
             </div>
             <div className="Createpost-information-container">
-              <div className="Createpost-name">{user && user.displayName ? user.displayName : "Yourname"}</div>
+              <div className="Createpost-name">{user && user.displayName ? user.displayName : "使用者"}</div>
               <div className="Createpost-date">{moment().format("YYYY/MM/DD h:mm a")}</div>
             </div>
           </div>
@@ -129,13 +136,15 @@ function Createpost() {
               onChange={(e) => setTitle(e.target.value)}
             />
           </div>
-          <Editor
-            placeholder="寫點什麼吧..."
-            editorState={editorState}
-            onChange={setEditorState}
-            handleKeyCommand={handleKeyCommand}
-            blockRendererFn={mediaBlockRenderer}
-          />
+          <div className="Createpost-text-container item">
+            <Editor
+              placeholder="寫點什麼吧..."
+              editorState={editorState}
+              onChange={setEditorState}
+              handleKeyCommand={handleKeyCommand}
+              blockRendererFn={mediaBlockRenderer}
+            />
+          </div>
           <div className="Createpost-toolbar-container">
             <div className="Createpost-toolbar">
               <div onMouseDown={(e) => handleTogggleClick(e, "BOLD")} className="Createpost-toolbar-box">
@@ -172,6 +181,7 @@ function Createpost() {
           disabled
           value={stateToHTML(editorState.getCurrentContent())}
         /> */}
+        {/* <div onClick={show}>show</div> */}
       </div>
     </div>
   );

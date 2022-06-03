@@ -83,7 +83,7 @@
     border: 0px;
     outline: none;
 }
-.DraftEditor-root{
+.Createpost-text-container{
     grid-row: 4/5;
 }
 .Createpost-toolbar-container{

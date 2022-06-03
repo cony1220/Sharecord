@@ -2,7 +2,7 @@ import React from "react";
 
 function Image(props) {
   return (
-    <img src={props.src} alt={props.src} role="presentation" style={{ width: 200 }} />
+    <img src={props.src} alt={props.src} role="presentation" />
   );
 }
 function Media(props) {
