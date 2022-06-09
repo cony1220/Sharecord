@@ -6,7 +6,7 @@
     position: absolute;
     width: 100%;
     height: 250px;
-    background-image: url("https://www.fotobeginner.com/wp-content/uploads/2015/04/lake-sunset-2021-08-26-18-27-36-utc-1.jpg");
+    background-image: url("https://firebasestorage.googleapis.com/v0/b/sharecord-399bf.appspot.com/o/backgroundImage%2Ftop-view-person-writing-laptop-with-copy-space.jpg?alt=media&token=3c9426e8-255c-45b2-940e-78220c2933c2");
     background-repeat: no-repeat;
     background-size: cover;
     background-position: top;
@@ -21,8 +21,8 @@
     grid-template-columns: 1fr 100px 1fr;
     align-content: center;
     align-items: center;
-    color: #FFFFFF;
-    font-size: 60px;
+    color: #485892;
+    font-size: 6vmin;
 }
 .Home-slogan-line1{
     grid-row: 1/2;
@@ -40,12 +40,13 @@
     width: 1000px;
     min-height: calc(100vh - 54px);
     display: grid;
-    grid-template-columns: 200px 800px;
+    grid-template-columns: 200px 760px;
 }
 .Home-personal-label-container{
+    grid-column: 1/2;
     position: sticky;
     top: 70px;
-    height: calc(100vh - 324px);
+    height: calc(100vh - 250px);
 }
 .Home-label-box{
     margin-bottom: 20px;
@@ -83,13 +84,52 @@
     border: 1px solid black;
     border-radius: 50%;
 }
-.Home-personal-container{
-
-}
 .Home-post-container{
-    width: 800px;
-    margin-left: auto;
-    margin-right: auto;
+    grid-column: 2/3;
+}
+.Home-post-search-container{
+    position: sticky;
+    top: 54px;
+    width: 100%;
+    height: 35px;
+    display: grid;
+    grid-template-columns: 38px 1fr 280px;
+    background-color: #FFFFFF;
+    align-items: center;
+    justify-items: center;
+}
+.Home-menu-icon-container{
+    display: none;
+    grid-column: 1/2;
+    width: 22px;
+    height: 22px;
+    cursor: pointer;
+}
+.Home-post-search-box{
+    grid-column: 3/4;
+    display: grid;
+    grid-template-columns: 250px 30px;
+    align-items: center;
+    justify-items: center;
+}
+.Home-post-search-input{
+    width: 100%;
+    height: 100%;
+    padding-left: 5px;
+    grid-column: 1/2;
+    border: 0px;
+    border-bottom: 1px solid black;
+    outline: none;
+}
+.Home-post-search-image-container{
+    width: 25px;
+    height: 25px;
+    grid-column: 2/3;
+    cursor: pointer;
+}
+.Home-post-search-image{
+    width: 25px;
+    height: 25px;
 }
 .Home-post-box{
     height: 180px;
@@ -185,12 +225,19 @@
 @media (max-width: 1000px){
     .Home-background-slogan{
         width: 90%;
-        grid-template-columns: 1fr 300px 1fr;
+        grid-template-columns: 1fr 150px 1fr;
     }
     .Home-content-box{
         width: 90%;
+        grid-template-columns: 1fr;
     }
     .Home-post-container{
         width: 100%;
+    }
+    .Home-personal-label-container{
+        display: none;
+    }
+    .Home-menu-icon-container{
+        display: block;
     }
 }

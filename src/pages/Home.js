@@ -1,23 +1,17 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import "./Home.css";
-import { onAuthStateChanged } from "firebase/auth";
 import {
-  collection, getDocs,
+  collection, getDocs, where, query, orderBy,
 }
   from "firebase/firestore";
 import moment from "moment";
 import { db, auth } from "../firebaseConfig";
 
 function Home() {
-  const [currentUser, setCurrentUser] = useState({});
   const [postList, setPostList] = useState([]);
   const [categoryList, setCategoryList] = useState([]);
-  useEffect(() => {
-    onAuthStateChanged(auth, (user) => {
-      setCurrentUser(user);
-    });
-  }, []);
+  const [search, setSearch] = useState("");
   useEffect(() => {
     const getCategory = async () => {
       const categorys = await getDocs(collection(db, "category"));
@@ -27,11 +21,41 @@ function Home() {
   }, []);
   useEffect(() => {
     const getPostList = async () => {
-      const posts = await getDocs(collection(db, "posts"));
+      const ref = collection(db, "posts");
+      const q = query(ref, orderBy("createTime", "desc"));
+      const posts = await getDocs(q);
       setPostList(posts.docs.map((post) => ({ ...post.data(), id: post.id })));
     };
     getPostList();
   }, []);
+  const handleSearchCategory = (categoryName) => {
+    const getPostList = async () => {
+      const ref = collection(db, "posts");
+      const q = query(ref, where("categoryName", "==", `${categoryName}`), orderBy("createTime", "desc"));
+      const posts = await getDocs(q);
+      setPostList(posts.docs.map((post) => ({ ...post.data(), id: post.id })));
+    };
+    getPostList();
+  };
+  const handleSearchAll = () => {
+    const getPostList = async () => {
+      const ref = collection(db, "posts");
+      const q = query(ref, orderBy("createTime", "desc"));
+      const posts = await getDocs(q);
+      setPostList(posts.docs.map((post) => ({ ...post.data(), id: post.id })));
+    };
+    getPostList();
+  };
+  const handleKeywordSearch = () => {
+    const getPostList = async () => {
+      const ref = collection(db, "posts");
+      const q = query(ref, where("keywords", "array-contains", search));
+      const posts = await getDocs(q);
+      setPostList(posts.docs.map((post) => ({ ...post.data(), id: post.id })));
+    };
+    getPostList();
+    setSearch("");
+  };
   return (
     <div className="Home-box">
       <div className="Home-background">
@@ -49,8 +73,14 @@ function Home() {
               </div>
               <div>分類</div>
             </div>
+            <div onClick={handleSearchAll} className="Home-category-container item">
+              <div className="Home-category-image-container">
+                <img className="Home-category" src="https://cdn-icons-png.flaticon.com/512/4712/4712846.png" alt="全部" />
+              </div>
+              <div>全部</div>
+            </div>
             {categoryList.map((item) => (
-              <div className="Home-category-container item" key={`${item.id}`}>
+              <div onClick={() => handleSearchCategory(item.name)} className="Home-category-container item" key={`${item.id}`}>
                 <div className="Home-category-image-container">
                   <img className="Home-category" src={item.imgurl} alt={item.name} />
                 </div>
@@ -58,34 +88,25 @@ function Home() {
               </div>
             ))}
           </div>
-          {currentUser && (
-            <div className="Home-personal-container">
-              <div className="Home-label-container">
-                <div className="Home-label-image-container">
-                  <img className="Home-label-image" src="https://cdn-icons-png.flaticon.com/128/617/617418.png" alt="Label" />
-                </div>
-                <div>個人</div>
-              </div>
-              <Link to="/createpost">
-                <div className="Home-category-container item">
-                  <div className="Home-category-image-container">
-                    <img className="Home-category" src="https://cdn-icons-png.flaticon.com/512/258/258332.png" alt="撰寫文章" />
-                  </div>
-                  <div>撰寫文章</div>
-                </div>
-              </Link>
-              <Link to={`/personal/${currentUser ? currentUser.uid : ""}`}>
-                <div className="Home-category-container item">
-                  <div className="Home-category-image-container">
-                    <img className="Home-category" src="https://cdn-icons-png.flaticon.com/512/609/609803.png" alt="我的主頁" />
-                  </div>
-                  <div>我的主頁</div>
-                </div>
-              </Link>
-            </div>
-          )}
         </div>
         <div className="Home-post-container">
+          <div className="Home-post-search-container">
+            <div className="Home-menu-icon-container">
+              <img src="https://cdn-icons-png.flaticon.com/512/56/56763.png" alt="菜單" />
+            </div>
+            <div className="Home-post-search-box">
+              <input
+                type="text"
+                className="Home-post-search-input"
+                placeholder="Search..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+              />
+              <div onClick={handleKeywordSearch} className="Home-post-search-image-container">
+                <img className="Home-post-search-image" src="https://cdn-icons-png.flaticon.com/128/151/151773.png" alt="搜尋" />
+              </div>
+            </div>
+          </div>
           {postList.length > 0 ? postList.map((item) => (
             <Link to={`/post/${item.id}`} key={item.id}>
               <div className="Home-post-box">
@@ -104,13 +125,13 @@ function Home() {
                   <div className="Home-post-text">{item.pureText}</div>
                   <div className="Home-post-like-message-container">
                     <div className="Home-post-like-container">
-                      <img className="Home-post-like" src="https://cdn-icons-png.flaticon.com/512/1077/1077035.png" alt="讚" />
+                      <img className="Home-post-like" src="https://cdn-icons-png.flaticon.com/128/1029/1029132.png" alt="讚" />
                     </div>
-                    <div>0</div>
+                    <div>{item.likeby.length}</div>
                     <div className="Home-post-message-container">
-                      <img className="Home-post-message" src="https://cdn-icons-png.flaticon.com/128/2462/2462719.png" alt="留言" />
+                      <img className="Home-post-message" src="https://cdn-icons-png.flaticon.com/512/2190/2190552.png" alt="留言" />
                     </div>
-                    <div>0</div>
+                    <div>{item.commentsCount || 0}</div>
                   </div>
                   {item.firstPicture && (
                     <div className="Home-post-photo-container">

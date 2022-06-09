@@ -1,0 +1,44 @@
+.Introduce-box{
+    padding-top: 54px;
+}
+.Introduce-content-box{
+    width: 90%;
+    margin-left: auto;
+    margin-right: auto;
+    padding-bottom: 40px;
+}
+.Introduce-slogan-container{
+    width: 1000px;
+    padding-top: 150px;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+}
+.Introduce-slogan-title{
+    font-size: 12vmin;
+    border-bottom: 1px solid black;
+}
+.Introduce-slogan-item{
+    margin-top: 50px;
+    font-size: 4vmin;
+}
+.Introduce-slogan-item-plus{
+    padding-top: 20px;
+}
+.Introduce-start-button-container{
+    height: 36px;
+    margin-top: 40px;
+    display: grid;
+    justify-content: center;
+}
+.Introduce-start-button{
+    padding: 6px;
+    width: 110px;
+    background-color: #98A8DF;
+    border-radius: 5px;
+}
+@media (max-width: 1000px){
+    .Introduce-slogan-container{
+        width: 100%;
+    }
+}

@@ -6,7 +6,6 @@ import {
 } from "draft-js";
 import "draft-js/dist/Draft.css";
 import { stateToHTML } from "draft-js-export-html";
-import { onAuthStateChanged } from "firebase/auth";
 import { collection, getDocs, addDoc, Timestamp,
 } from "firebase/firestore";
 import { ref, uploadBytes } from "firebase/storage";
@@ -19,16 +18,7 @@ function Createpost() {
   const [categoryList, setCategoryList] = useState([]);
   const [categoryName, setCategoryName] = useState("");
   const [title, setTitle] = useState("");
-  const [user, setUser] = useState({});
   const navigator = useNavigate();
-  useEffect(() => {
-    onAuthStateChanged(auth, (currentUser) => {
-      setUser(currentUser);
-      if (!currentUser) {
-        navigator("/");
-      }
-    });
-  }, []);
   useEffect(() => {
     const getCategory = async () => {
       const categorys = await getDocs(collection(db, "category"));
@@ -69,6 +59,7 @@ function Createpost() {
     const editorContent = convertToRaw(editorState.getCurrentContent());
     let pureText = "";
     let firstPicture = "";
+    const keywords = [];
     for (let i = 0; i < editorContent.blocks.length; i += 1) {
       pureText += editorContent.blocks[i].text;
       if (pureText.length >= 100) {
@@ -84,9 +75,15 @@ function Createpost() {
         firstPicture = "";
       }
     }
+    for (let i = 0; i < title.length; i += 1) {
+      for (let j = i + 1; j < title.length + 1; j += 1) {
+        keywords.push(title.slice(i, j));
+      }
+    }
     await addDoc(collection(db, "posts"), {
       categoryName,
       title,
+      keywords,
       stateContent: JSON.stringify(convertToRaw(editorState.getCurrentContent())),
       htmlContent: stateToHTML(editorState.getCurrentContent()),
       pureText,
@@ -103,7 +100,7 @@ function Createpost() {
   };
   const show = () => {
     console.log(convertToRaw(editorState.getCurrentContent()));
-  }
+  };
   return (
     <div className="Createpost-box">
       <div className="Createpost-background" />
@@ -121,10 +118,10 @@ function Createpost() {
           </div>
           <div className="Createpost-personal-information item">
             <div className="Createpost-avatar-container">
-              <img className="Createpost-avatar" src={user && user.photoURL ? user.photoURL : "https://cdn-icons-png.flaticon.com/512/847/847969.png"} alt="" />
+              <img className="Createpost-avatar" src={auth.currentUser && auth.currentUser.photoURL ? auth.currentUser.photoURL : "https://cdn-icons-png.flaticon.com/512/847/847969.png"} alt="" />
             </div>
             <div className="Createpost-information-container">
-              <div className="Createpost-name">{user && user.displayName ? user.displayName : "使用者"}</div>
+              <div className="Createpost-name">{auth.currentUser && auth.currentUser.displayName ? auth.currentUser.displayName : "使用者"}</div>
               <div className="Createpost-date">{moment().format("YYYY/MM/DD h:mm a")}</div>
             </div>
           </div>

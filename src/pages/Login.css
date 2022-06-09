@@ -7,7 +7,7 @@
     bottom: 0px;
     padding-top: 54px;
     width: 100%;
-    background-image: url("https://www.fotobeginner.com/wp-content/uploads/2015/04/lake-sunset-2021-08-26-18-27-36-utc-1.jpg");
+    background-image: url("https://firebasestorage.googleapis.com/v0/b/sharecord-399bf.appspot.com/o/backgroundImage%2Ftop-view-person-writing-laptop-with-copy-space.jpg?alt=media&token=3c9426e8-255c-45b2-940e-78220c2933c2");
     background-repeat: no-repeat;
     background-size: cover;
     background-position: center;
@@ -27,7 +27,7 @@
     padding-right: 10px;
     font-size: 48px;
     font-weight: bold;
-    color: #FFFFFF;
+    color: rgb(140, 131, 131);
 }
 .text{
     height: 170px;
@@ -35,7 +35,7 @@
     margin-top: 20px;
     padding-right: 10px;
     font-size: 20px;
-    color: #FFFFFF;
+    color: rgb(140, 131, 131);
     line-height: 29px;
 }
 .signin-up-container{

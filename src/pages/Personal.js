@@ -1,24 +1,17 @@
 import React, { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import "./Personal.css";
-import { onAuthStateChanged } from "firebase/auth";
 import {
-  collection, getDoc, getDocs, query, where, doc,
+  collection, getDoc, getDocs, query, where, doc, orderBy,
 }
   from "firebase/firestore";
 import moment from "moment";
 import { db, auth } from "../firebaseConfig";
 
 function Personal() {
-  const [currentUser, setCurrentUser] = useState({});
   const [pageOwner, setPageOwner] = useState({});
   const [postList, setPostList] = useState([]);
   const { userId } = useParams();
-  useEffect(() => {
-    onAuthStateChanged(auth, (user) => {
-      setCurrentUser(user);
-    });
-  }, []);
   useEffect(() => {
     const getPageOwner = async () => {
       const docSnap = await getDoc(doc(db, `users/${userId}`));
@@ -26,7 +19,7 @@ function Personal() {
     };
     const getPostList = async () => {
       const ref = collection(db, "posts");
-      const q = query(ref, where("author.uid", "==", `${userId}`));
+      const q = query(ref, where("author.uid", "==", `${userId}`), orderBy("createTime", "desc"));
       const posts = await getDocs(q);
       setPostList(posts.docs.map((post) => ({ ...post.data(), id: post.id })));
     };
@@ -64,13 +57,13 @@ function Personal() {
                   <div className="Personal-post-text">{item.pureText}</div>
                   <div className="Personal-post-like-message-container">
                     <div className="Personal-post-like-container">
-                      <img className="Personal-post-like" src="https://cdn-icons-png.flaticon.com/512/1077/1077035.png" alt="讚" />
+                      <img className="Personal-post-like" src="https://cdn-icons-png.flaticon.com/128/1029/1029132.png" alt="讚" />
                     </div>
-                    <div>0</div>
+                    <div>{item.likeby.length}</div>
                     <div className="Personal-post-message-container">
-                      <img className="Personal-post-message" src="https://cdn-icons-png.flaticon.com/128/2462/2462719.png" alt="留言" />
+                      <img className="Personal-post-message" src="https://cdn-icons-png.flaticon.com/512/2190/2190552.png" alt="留言" />
                     </div>
-                    <div>0</div>
+                    <div>{item.commentsCount || 0}</div>
                   </div>
                   {item.firstPicture && (
                     <div className="Personal-post-photo-container">

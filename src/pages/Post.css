@@ -1,3 +1,31 @@
+.Loginbox-popup-container{
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    background-color: rgb(0,0,0,0.5);
+    z-index: 99;
+    display: grid;
+    align-items: center;
+    justify-content: center;
+}
+.Loginbox-popup-box{
+    position: relative;
+    background-color: #FFFFFF;
+    border-radius: 5px;
+}
+.Loginbox-popup-box-close{
+    position: absolute;
+    top: 15px;
+    right: 25px;
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+}
+.Loginbox-popup-title{
+    text-align: center;
+    padding: 15px 25px 0px;
+    font-size: 28px;
+}
 .Post-box{
     padding-top: 54px;
     width: 100%;
@@ -8,7 +36,7 @@
     position: absolute;
     width: 100%;
     height: 250px;
-    background-image: url("https://www.fotobeginner.com/wp-content/uploads/2015/04/lake-sunset-2021-08-26-18-27-36-utc-1.jpg");
+    background-image: url("https://firebasestorage.googleapis.com/v0/b/sharecord-399bf.appspot.com/o/backgroundImage%2Ftop-view-person-writing-laptop-with-copy-space.jpg?alt=media&token=3c9426e8-255c-45b2-940e-78220c2933c2");
     background-repeat: no-repeat;
     background-size: cover;
     background-position: top;
@@ -18,7 +46,7 @@
     padding: 150px 0px 50px;
     margin-left: auto;
     margin-right: auto;
-    width: 1000px;
+    width: 980px;
     min-height: calc(100vh - 54px);
 }
 .Post-content-container{
@@ -32,8 +60,11 @@
     grid-template-rows: 78px 1fr 30px;
     cursor: default;
 }
-.Post-personal-information{
+.Post-personal-information-container{
     grid-row: 1/2;
+    width: 275px;
+}
+.Post-personal-information{
     display: grid;
     grid-template-columns: 75px 200px;
     align-items: center;
@@ -69,27 +100,177 @@
 .Post-like-message-container{
     grid-row: 3/4;
     display: grid;
-    grid-template-columns: repeat(4, 25px);
+    grid-template-columns: repeat(4, 25px) 1fr repeat(2, 30px);
     align-items: center;
     justify-items: center;
 }
-.Post-like-container{
+.Post-like-icon-container{
     grid-column: 1/2;
     width: 25px;
     height: 25px;
 }
-.Post-like{
+.Post-like-message-icon{
     width: 25px;
     height: 25px;
 }
-.Post-message-container{
+.Post-message-icon-container{
     grid-column: 3/4;
     width: 25px;
     height: 25px;
 }
-.Post-message{
+.Post-like-button-icon-container{
+    grid-column: 6/7;
     width: 25px;
     height: 25px;
+    cursor: pointer;
+}
+.Post-collect-button-icon-container{
+    grid-column: 7/8;
+    width: 25px;
+    height: 25px;
+    cursor: pointer;
+}
+.Post-message-container{
+    margin-top: 20px;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0px 4px 4px rgb(0,0,0,0.25);
+    background-color: #FFFFFF;
+}
+.Post-message-title{
+    color: #938E8E;
+    padding: 10px 0px 10px;
+    border-bottom: 1px solid #D8D1D1;
+}
+.Post-user-message-box{
+    padding: 10px 0px 10px;
+    display: grid;
+    grid-template-columns: 40px 1fr;
+}
+.Post-user-message-avatar{
+    grid-column: 1/2;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-right: 10px;
+}
+.Post-user-message-input-container{
+    grid-column: 2/3;
+    display: grid;
+    grid-template-rows: 1fr 40px;
+    grid-template-columns: 1fr 52px;
+}
+.Post-user-message-input{
+    grid-row: 1/2;
+    grid-column: 1/3;
+    width: 100%;
+    height: 80px;
+    outline: none;
+    resize: none;
+}
+.Post-user-message-next{
+    text-align: center;
+    margin-top: 10px;
+    grid-row: 2/3;
+    grid-column: 2/3;
+    padding: 6px 5px 6px;
+    font-size: 14px;
+    color: #FFFFFF;
+    background-color: #14113C;
+    border-radius: 5px;
+    cursor: pointer;
+}
+.Post-comments-container{
+    padding: 10px 0px 10px;
+    border-top: 1px solid #D8D1D1;
+    display: grid;
+    grid-template-columns: 40px 1fr;
+    position: relative;
+}
+.Post-comments-menu-container{
+    position: absolute;
+    top: 15px;
+    right: 10px;
+    width: 15px;
+    height: 15px;
+    cursor: pointer;
+}
+.Post-comments-menu-box{
+    padding: 5px;
+    position: absolute;
+    top: 45px;
+    right: -14px;
+    width: 60px;
+    height: 60px;
+    background-color: #FFFFFF;
+    border-radius: 5px;
+    box-shadow: 0px 3px 8px rgb(0,0,0,0.2);
+    filter: drop-shadow(rgba(0, 0, 0, 0.1) 0px 3px 12px); 
+    z-index: 99;
+    display: grid;
+    grid-template-rows: 1fr 1fr;
+    justify-items: center;
+    cursor: pointer;
+}
+.Post-comments-box-cube{
+    position: absolute;
+    top: -7px;
+    left: 50%;
+    width: 14px;
+    height: 14px;
+    background-color: #FFFFFF;
+    transform: translateX(-50%) rotate(-135deg);
+}
+.Post-comments-avatar-container{
+    grid-column: 1/2;
+    padding-right: 10px;
+}
+.Post-comments-avatar{
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+.Post-comments-name-content-container{
+    grid-column: 2/3;
+}
+.Post-comments-createtime{
+    color: #938E8E;
+}
+.Post-comments-content{
+    padding-top: 10px;
+    color: rgb(0,0,0,0.75);
+}
+.Post-comments-edit-button-container{
+    display: grid;
+    grid-template-columns: 1fr 52px 52px;
+}
+.Post-comments-edit-cancel-button{
+    grid-column: 2/3;
+    text-align: center;
+    margin-top: 10px;
+    margin-right: 3px;
+    padding: 6px 5px 6px;
+    font-size: 14px;
+    color: black;
+    background-color: #E5E5E5;
+    border: 0px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+.Post-comments-edit-next-button{
+    grid-column: 3/4;
+    text-align: center;
+    margin-top: 10px;
+    margin-left: 3px;
+    padding: 6px 5px 6px;
+    font-size: 14px;
+    color: #FFFFFF;
+    background-color: #14113C;
+    border: 0px;
+    border-radius: 5px;
+    cursor: pointer;
 }
 @media (max-width: 1000px){
     .Post-content-box{
