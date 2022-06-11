@@ -14,6 +14,10 @@ import Post from "./pages/Post";
 import Personal from "./pages/Personal";
 import NoMatch from "./pages/NoMatch";
 import Introduce from "./pages/Introduce";
+import ProtectedRoute from "./pages/ProtectedRoute";
+import Edit from "./pages/Edit";
+import Setup from "./pages/Setup";
+import My from "./pages/My";
 
 function App() {
   const [user, setUser] = useState(null);
@@ -27,11 +31,16 @@ function App() {
       <Header user={user} />
       <Routes>
         <Route path="/" element={user ? <Navigate to="/home" /> : <Introduce />} />
-        <Route path="/home" element={user ? <Home /> : <Navigate to="/" />} />
         <Route path="/login" element={user ? <Navigate to="/home" /> : <Login />} />
-        <Route path="/createpost" element={user ? <Createpost /> : <Navigate to="/" />} />
-        <Route path="/post/:postId" element={user ? <Post user={user} /> : <Navigate to="/" />} />
-        <Route path="personal/:userId" element={user ? <Personal /> : <Navigate to="/" />} />
+        <Route element={<ProtectedRoute />}>
+          <Route path="/home" element={<Home />} />
+          <Route path="/createpost" element={<Createpost />} />
+          <Route path="/post/:postId" element={<Post user={user} />} />
+          <Route path="personal/:userId" element={<Personal />} />
+          <Route path="edit/:postId" element={<Edit />} />
+          <Route path="setup/:userId" element={<Setup />} />
+          <Route path="my/:userId" element={<My />} />
+        </Route>
         <Route path="*" element={<NoMatch status={404} />} />
       </Routes>
       <Footer />

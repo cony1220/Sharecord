@@ -14,8 +14,8 @@ import { db, auth, provider } from "../firebaseConfig";
 function Loginbox() {
   const navigator = useNavigate();
   const [action, setAction] = useState("login");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState("email@gmail.com");
+  const [password, setPassword] = useState("password");
   const [errorMessage, setErrorMessage] = useState("");
   const [showPassword, setPaswwordShow] = useState(false);
   const [userList, setUserList] = useState([]);
@@ -114,12 +114,13 @@ function Loginbox() {
               id="email"
               className="email-input item"
               placeholder="輸入信箱"
+              value={email}
               onChange={(e) => {
                 setEmail(e.target.value);
               }}
             />
           </label>
-          <label htmlFor="password" className="password-contaer">
+          <label htmlFor="password" className="password-container">
             <div className="password item">Password</div>
             <div className="password-input-container">
               <input
@@ -127,6 +128,7 @@ function Loginbox() {
                 id="password"
                 className="password-input item"
                 placeholder="輸入密碼"
+                value={password}
                 onChange={(e) => {
                   setPassword(e.target.value);
                 }}

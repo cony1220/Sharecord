@@ -1,3 +1,7 @@
+.Post-content-container img{
+    max-width: 100%;
+    max-height: 60vh;
+}
 .Loginbox-popup-container{
     position: fixed;
     width: 100%;
@@ -181,6 +185,18 @@
     border-radius: 5px;
     cursor: pointer;
 }
+.Post-posts-menu-icon-container{
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    width: 30px;
+    height: 30px;
+    cursor: pointer;
+}
+.Post-posts-menu-icon{
+    width: 30px;
+    height: 30px;
+}
 .Post-comments-container{
     padding: 10px 0px 10px;
     border-top: 1px solid #D8D1D1;
@@ -194,6 +210,27 @@
     right: 10px;
     width: 15px;
     height: 15px;
+    cursor: pointer;
+}
+.Post-comments-menu-icon{
+    width: 15px;
+    height: 15px;
+}
+.Post-posts-menu-box{
+    padding: 5px;
+    position: absolute;
+    top: 70px;
+    right: 0px;
+    width: 60px;
+    height: 60px;
+    background-color: #FFFFFF;
+    border-radius: 5px;
+    box-shadow: 0px 3px 8px rgb(0,0,0,0.2);
+    filter: drop-shadow(rgba(0, 0, 0, 0.1) 0px 3px 12px); 
+    z-index: 99;
+    display: grid;
+    grid-template-rows: 1fr 1fr;
+    justify-items: center;
     cursor: pointer;
 }
 .Post-comments-menu-box{

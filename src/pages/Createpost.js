@@ -89,6 +89,7 @@ function Createpost() {
       pureText,
       firstPicture: firstPicture || "",
       likeby: [],
+      collectby: [],
       createTime: Timestamp.now(),
       author: {
         name: auth.currentUser.displayName || "使用者",

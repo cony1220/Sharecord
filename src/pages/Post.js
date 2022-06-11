@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import "./Post.css";
 import {
   Editor, EditorState, convertFromRaw, CompositeDecorator,
 } from "draft-js";
 import {
   query, doc, updateDoc, arrayUnion, orderBy, arrayRemove,
-  onSnapshot, writeBatch, increment, collection, Timestamp,
+  onSnapshot, writeBatch, increment, collection, Timestamp, deleteDoc,
 } from "firebase/firestore";
 import moment from "moment";
 import { db, auth } from "../firebaseConfig";
@@ -44,6 +44,8 @@ function Post({ user }) {
   const [clickedComment, setClickedComment] = useState("");
   const [isEdit, setIsEdit] = useState(false);
   const [commentEditContent, setCommentEditContent] = useState("");
+  const [isPostMenu, setIsPostMenu] = useState(false);
+  const navigator = useNavigate();
   const isLiked = auth.currentUser ? post.likeby?.includes(auth.currentUser.uid) : false;
   const isCollected = auth.currentUser ? post.collectby?.includes(auth.currentUser.uid) : false;
   const [editorState, setEditorState] = useState(
@@ -58,8 +60,11 @@ function Post({ user }) {
   useEffect(() => {
     onSnapshot(doc(db, `posts/${postId}`), (docSnap) => {
       setPost(docSnap.data());
-      const contentState = convertFromRaw(JSON.parse(docSnap.data().stateContent));
-      setEditorState(EditorState.createWithContent(contentState, decorator));
+      if (docSnap.data()) {
+        const data = docSnap.data().stateContent;
+        const contentState = convertFromRaw(JSON.parse(data));
+        setEditorState(EditorState.createWithContent(contentState, decorator));
+      }
     });
   }, []);
   useEffect(() => {
@@ -138,6 +143,16 @@ function Post({ user }) {
   const cancelEdit = () => {
     setIsEdit(false);
   };
+  const postEdit = () => {
+    navigator(`/edit/${postId}`);
+  };
+  const postDelete = () => {
+    deleteDoc(doc(db, `posts/${postId}`));
+    navigator(-1);
+  };
+  const handlePostMenu = () => {
+    setIsPostMenu((pre) => !pre);
+  };
   return (
     <>
       { showLoginbox
@@ -156,6 +171,21 @@ function Post({ user }) {
         <div className="Post-background" />
         <div className="Post-content-box">
           <div className="Post-content-container">
+            {auth.currentUser?.uid === post.author.uid
+              && (
+                <>
+                  <div onClick={() => handlePostMenu()} className="Post-posts-menu-icon-container">
+                    <img className="Post-posts-menu-icon" src="https://cdn-icons-png.flaticon.com/512/1160/1160515.png" alt="選項" />
+                  </div>
+                  {isPostMenu ? (
+                    <div className="Post-posts-menu-box">
+                      <div onClick={() => postEdit()}>編輯</div>
+                      <div onClick={() => postDelete()}>刪除</div>
+                      <div className="Post-comments-box-cube" />
+                    </div>
+                  ) : null}
+                </>
+              )}
             <Link to={`/personal/${post.author.uid}`} className="Post-personal-information-container">
               <div className="Post-personal-information item">
                 <div className="Post-avatar-container">
@@ -214,7 +244,7 @@ function Post({ user }) {
                   && (
                     <>
                       <div onClick={() => handleMenu(item.id)} className="Post-comments-menu-container">
-                        <img src="https://cdn-icons-png.flaticon.com/128/2089/2089793.png" alt="選項" />
+                        <img className="Post-comments-menu-icon" src="https://cdn-icons-png.flaticon.com/128/2089/2089793.png" alt="選項" />
                       </div>
                       {isMenu && clickedComment === item.id ? (
                         <div className="Post-comments-menu-box">

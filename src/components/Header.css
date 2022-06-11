@@ -2,7 +2,7 @@
     position: fixed;
     width: 100%;
     background-color: #d0d7e4;
-    z-index: 2;
+    z-index: 100;
     border-bottom: 1px solid #e9dcdc;
 }
 .Header-container{
@@ -30,6 +30,9 @@
 .Header-write-icon-container{
   width: 22px;
   height: 22px;
+}
+.Header-write-icon{
+  width: 22px;
 }
 .Header-my-link{
   grid-column: 5/6;

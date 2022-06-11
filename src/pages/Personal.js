@@ -6,7 +6,7 @@ import {
 }
   from "firebase/firestore";
 import moment from "moment";
-import { db, auth } from "../firebaseConfig";
+import { db } from "../firebaseConfig";
 
 function Personal() {
   const [pageOwner, setPageOwner] = useState({});
@@ -34,7 +34,9 @@ function Personal() {
           <div className="Personal-avatar-container">
             <img className="Personal-avatar" src={pageOwner && pageOwner.photoURL} alt="" />
           </div>
-          <div className="Personal-name">{pageOwner && pageOwner.name}</div>
+          <div className="Personal-name-container">
+            <div className="Personal-name">{pageOwner && pageOwner.name}</div>
+          </div>
           <div className="Personal-post-count">{`${postList.length}篇文章`}</div>
         </div>
         <div className="Personal-bar" />

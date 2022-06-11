@@ -46,8 +46,25 @@
     border-radius: 50%;
     object-fit: cover;
 }
-.Personal-name{
+.Personal-name-container{
     font-weight: bold;
+    display: grid;
+    grid-template-columns: 45px 1fr;
+    align-items: center;
+    width: 100%;
+}
+.Personal-setup-container{
+    grid-column: 1/2;
+    width: 30px;
+    height: 30px;
+    cursor: pointer;
+}
+.Personal-setup{
+    width: 30px;
+    height: 30px;
+}
+.Personal-name{
+    grid-column: 2/3;
 }
 .Personal-post-count{
     color: #938E8E;
@@ -61,6 +78,36 @@
     margin-left: auto;
     margin-right: auto;
     margin-top: 20px;
+}
+.Personal-post-menu-button-container{
+    display: grid;
+    grid-template-columns: 100px 100px;
+    justify-items: center;
+}
+.Personal-post-menu-button-unclicked{
+    width: 80px;
+    height: 30px;
+    font-weight: bold;
+    border-radius: 10px;
+    background-color: #ddd8d8;
+    padding: 5px 5px 7px;
+    text-align: center;
+    box-shadow: 4px 4px 4px rgba(0, 0, 0, 0.25);
+    cursor: pointer;
+}
+.Personal-post-menu-button-unclicked:hover{
+    background-color: #938E8E;
+}
+.Personal-post-menu-button-clicked{
+    width: 80px;
+    height: 30px;
+    font-weight: bold;
+    border-radius: 10px;
+    background-color: #938E8E;
+    box-shadow: 4px 4px 4px rgba(0, 0, 0, 0.25);
+    padding: 5px 5px 7px;
+    text-align: center;
+    cursor: pointer;
 }
 .Personal-post-box{
     height: 180px;

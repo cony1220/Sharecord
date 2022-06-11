@@ -12,6 +12,7 @@ function Home() {
   const [postList, setPostList] = useState([]);
   const [categoryList, setCategoryList] = useState([]);
   const [search, setSearch] = useState("");
+  const [isCategoryMenu, setIsCategoryMenu] = useState(false);
   useEffect(() => {
     const getCategory = async () => {
       const categorys = await getDocs(collection(db, "category"));
@@ -36,6 +37,7 @@ function Home() {
       setPostList(posts.docs.map((post) => ({ ...post.data(), id: post.id })));
     };
     getPostList();
+    setIsCategoryMenu(false);
   };
   const handleSearchAll = () => {
     const getPostList = async () => {
@@ -45,6 +47,7 @@ function Home() {
       setPostList(posts.docs.map((post) => ({ ...post.data(), id: post.id })));
     };
     getPostList();
+    setIsCategoryMenu(false);
   };
   const handleKeywordSearch = () => {
     const getPostList = async () => {
@@ -55,6 +58,9 @@ function Home() {
     };
     getPostList();
     setSearch("");
+  };
+  const toggleCategoryMenu = () => {
+    setIsCategoryMenu((pre) => !pre);
   };
   return (
     <div className="Home-box">
@@ -91,9 +97,36 @@ function Home() {
         </div>
         <div className="Home-post-container">
           <div className="Home-post-search-container">
-            <div className="Home-menu-icon-container">
-              <img src="https://cdn-icons-png.flaticon.com/512/56/56763.png" alt="菜單" />
+            <div onClick={toggleCategoryMenu} className="Home-menu-icon-container">
+              <img className="Home-menu-icon" src="https://cdn-icons-png.flaticon.com/512/56/56763.png" alt="菜單" />
             </div>
+            { isCategoryMenu ? (
+              <div className="Home-categorymenu-container">
+                <div className="Home-label-box">
+                  <div className="Home-label-container">
+                    <div className="Home-label-image-container">
+                      <img className="Home-label-image" src="https://cdn-icons-png.flaticon.com/128/617/617418.png" alt="Label" />
+                    </div>
+                    <div>分類</div>
+                  </div>
+                  <div onClick={handleSearchAll} className="Home-category-container item">
+                    <div className="Home-category-image-container">
+                      <img className="Home-category" src="https://cdn-icons-png.flaticon.com/512/4712/4712846.png" alt="全部" />
+                    </div>
+                    <div>全部</div>
+                  </div>
+                  {categoryList.map((item) => (
+                    <div onClick={() => handleSearchCategory(item.name)} className="Home-category-container item" key={`${item.id}`}>
+                      <div className="Home-category-image-container">
+                        <img className="Home-category" src={item.imgurl} alt={item.name} />
+                      </div>
+                      <div>{item.name}</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )
+              : null}
             <div className="Home-post-search-box">
               <input
                 type="text"
