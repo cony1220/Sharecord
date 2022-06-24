@@ -1,0 +1,284 @@
+.Introduce-box{
+    padding: 54px 0px 250px;
+}
+.Introduce-slogan-container-background{
+    position: relative;
+    padding: 0px 0 150px;
+}
+.Introduce-slogan-container-background::before{
+    content: "";
+    position: absolute;
+    background-color: rgba(103,155,192,0.5);
+    top: 0px;
+    left: 0px;
+    width: 100%;
+    height: 100%;
+    transform: skewY(8deg);
+    transform-origin: bottom right;
+    z-index: -1;
+}
+.Introduce-slogan-container-background::after{
+    content: "";
+    position: absolute;
+    background-color: rgba(208,215,228,0.8);
+    top: 0px;
+    left: 0px;
+    width: 100%;
+    height: 100%;
+    transform: skewY(-10deg);
+    transform-origin: bottom left;
+    z-index: -1;
+}
+.Introduce-connect-arrow-container{
+    margin-left: auto;
+    margin-right: auto;
+    display: grid;
+    grid-template-rows: 30px 150px;
+    grid-template-columns: 100px 150px;
+    justify-content: center;
+}
+.Introduce-connect-word{
+    grid-row: 1/2;
+    grid-column: 1/2;
+    font-size: 24px;
+    font-weight: bold;
+}
+.Introduce-connect-arrow{
+    grid-row: 2/3;
+    grid-column: 2/3;
+    width: 150px;
+    height: 150px;
+}
+.Introduce-slogan-container{
+    width: 1000px;
+    padding-top: 150px;
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 40px;
+    text-align: center;
+}
+.Introduce-slogan-title{
+    font-size: 12vmin;
+    border-bottom: 1px solid black;
+}
+.Introduce-slogan-item{
+    margin-top: 50px;
+    font-size: 4vmin;
+}
+.Introduce-slogan-item-plus{
+    padding-top: 20px;
+}
+.Introduce-start-button-container{
+    height: 36px;
+    margin-top: 40px;
+    display: grid;
+    justify-content: center;
+}
+.Introduce-start-button{
+    padding: 6px;
+    width: 110px;
+    background-color: #98A8DF;
+    border-radius: 5px;
+}
+.Introduce-start-button:hover{
+    background-color: #6F84CF;
+}
+.Introduce-example-container{
+    width: 90%;
+    margin: 70px auto 30px;
+}
+.Introduce-example-box{
+    display: grid;
+    grid-template-columns: 40% 60%;
+    align-items: center;
+}
+.Introduce-example-word-container{
+    grid-column: 1/2;
+    margin-bottom: 20px;
+}
+.Introduce-example-image-container{
+    width: 200px;
+    height: 200px;
+    margin-left: auto;
+    margin-right: auto;
+}
+.Introduce-example-image{
+    width: 200px;
+    object-fit: cover;
+}
+.Introduce-example-word{
+    font-size: 28px;
+    text-align: center;
+}
+.Introduce-example-gif-container{
+    grid-column: 2/3;
+}
+.Introduce-example-gif{
+    width: 100%;
+    border-radius: 5px;
+}
+.Introduce-content-container{
+    width: 90%;
+    margin: 30px auto 30px;
+}
+.Introduce-content-item1{
+    display: grid;
+    grid-template-columns: 450px 450px;
+    justify-content: center;
+}
+.Introduce-read-word-container{
+    display: grid;
+    grid-template-columns: 280px 150px;
+    margin: 20px auto 0px;
+    align-items: center;
+    justify-items: center;
+    justify-content: center;
+}
+.Introduce-read-word{
+    grid-column: 1/2;
+}
+.Introduce-read-word-title{
+    font-size: 28px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+.Introduce-read-icon-container{
+    grid-column: 2/3;
+}
+.Introduce-read-icon{
+   width: 120px;
+   height: 120px;
+}
+.Introduce-arrow-icon-container{
+    display: grid;
+    justify-items: center;
+    margin-bottom: 50px;
+}
+.Introduce-arrow-icon{
+    width: 150px;
+    height: 150px;
+    transform: rotate(180deg);
+}
+.Introduce-collect-word-container{
+    display: grid;
+    grid-template-columns: 280px 150px;
+    margin: 20px auto 0px;
+    align-items: center;
+    justify-items: center;
+    justify-content: center;
+}
+.Introduce-write-word-container{
+    width: 450px;
+    display: grid;
+    grid-template-columns: 280px 150px;
+    align-items: center;
+    justify-items: center;
+    justify-content: center;
+    margin: 20px auto 0px;
+}
+.Introduce-footer-container{
+    position: absolute;
+    bottom: 0px;
+    height: 180px;
+    width: 100%;
+    background-color: #8BACC5;
+}
+.Introduce-footer-slogan{
+    display: grid;
+    grid-template-columns: 40px 160px 65px;
+    justify-content: center;
+    justify-items: center;
+    align-items: center;
+    margin-top: 40px;
+}
+.Introduce-logo{
+    width: 30px;
+    height: 30px;
+}
+.Introduce-slogan{
+    font-size: 28px;
+    font-weight: bold;
+    padding-right: 10px;
+    border-right: 1px solid black;
+}
+.Introduce-link-container{
+    margin-top: 15px;
+    display: grid;
+    height: 40px;
+    grid-template-columns: 40px 40px 40px;
+    justify-content: center;
+    justify-items: center;
+    align-items: center;
+}
+@media (max-width: 1200px){
+    .Introduce-slogan-container{
+        width: 90%;
+    }
+}
+@media (max-width: 1000px){
+    .Introduce-content-container{
+        text-align: center;
+    }
+    .Introduce-content-item1 {
+        display: grid;
+        grid-template-columns: 450px;
+        grid-template-rows: 1fr 1fr;
+        justify-content: center;
+    }
+    .Introduce-read-word-container{
+        grid-column: 1/2;
+        grid-row: 1/2;
+    }
+    .Introduce-collect-word-container{
+        grid-column: 1/2;
+        grid-row: 2/3;
+    }
+    .Introduce-example-box {
+        display: grid;
+        grid-template-columns: 1fr;
+        align-items: center;
+        justify-items: center;
+    }
+    .Introduce-example-word-container{
+        grid-row: 1/2;
+        grid-column: 1/2;
+    }
+    .Introduce-example-gif-container{
+        max-width: 80vh;
+        grid-row: 2/3;
+        grid-column: 1/2;
+    }
+}
+@media (max-width: 550px){
+    .Introduce-content-item1 {
+        display: grid;
+        grid-template-columns: 280px;
+        grid-template-rows: 1fr 1fr;
+        justify-content: center;
+    }
+    .Introduce-read-word-container{
+        grid-template-rows: 1fr 1fr;
+        grid-template-columns: 280px;
+        grid-column: 1/2;
+        grid-row: 1/2;
+    }
+    .Introduce-read-icon-container{
+        grid-column: 1/2;
+        grid-row: 1/2;
+    }
+    .Introduce-read-word{
+        grid-column: 1/2;
+        grid-row: 2/3;
+    }
+    .Introduce-collect-word-container{
+        grid-column: 1/2;
+        grid-row: 2/3;
+        grid-template-rows: 1fr 1fr;
+        grid-template-columns: 280px;
+    }
+    .Introduce-write-word-container{
+        width: 280px;
+        grid-template-columns: 280px;
+        grid-template-rows: 1fr 1fr;
+    }
+}

@@ -1,18 +1,21 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import "./Createpost.css";
+import "../Styles/Createpost.css";
 import {
-  Editor, EditorState, RichUtils, convertToRaw, AtomicBlockUtils, CompositeDecorator, convertFromRaw,
+  Editor, EditorState, RichUtils, convertToRaw,
+  AtomicBlockUtils, CompositeDecorator, convertFromRaw,
 } from "draft-js";
 import "draft-js/dist/Draft.css";
 import { stateToHTML } from "draft-js-export-html";
-import { collection, getDocs, doc, getDoc, updateDoc,
+import {
+  collection, getDocs, doc, getDoc, updateDoc,
 } from "firebase/firestore";
-import { ref, uploadBytes } from "firebase/storage";
-import { db, storage, auth } from "../firebaseConfig";
+import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { v4 } from "uuid";
 import moment from "moment";
+import { db, storage, auth } from "../firebaseConfig";
 import mediaBlockRenderer from "../components/mediaBlockRenderer";
+import useGetColData from "../hooks/useCollection";
 
 function findImageEntities(contentBlock, callback, contentState) {
   contentBlock.findEntityRanges(
@@ -39,9 +42,9 @@ function Edit() {
   const [post, setPost] = useState({
     author: {},
   });
-  const [categoryList, setCategoryList] = useState([]);
   const [categoryName, setCategoryName] = useState("");
   const [title, setTitle] = useState("");
+  const imageInput = useRef();
   const navigator = useNavigate();
   const [editorState, setEditorState] = useState(
     () => EditorState.createEmpty(),
@@ -52,13 +55,7 @@ function Edit() {
       component: Image,
     },
   ]);
-  useEffect(() => {
-    const getCategory = async () => {
-      const categorys = await getDocs(collection(db, "category"));
-      setCategoryList(categorys.docs.map((category) => ({ ...category.data(), id: category.id })));
-    };
-    getCategory();
-  }, []);
+  const { isLoading, data: categoryList } = useGetColData("category");
   useEffect(() => {
     const getPost = async () => {
       const docSnap = await getDoc(doc(db, `posts/${postId}`));
@@ -90,18 +87,26 @@ function Edit() {
     e.preventDefault();
     setEditorState(RichUtils.toggleInlineStyle(editorState, inlineStyle));
   };
+  const onClickInsertImage = () => {
+    imageInput.current.click();
+  };
   const handleInsertImage = () => {
-    const src = prompt("Please enter the URL of your picture");
-    if (!src) {
-      return;
+    const files = imageInput.current.files || [];
+    if (files.length > 0) {
+      const imageRef = ref(storage, `post-images/${auth.currentUser.uid}/${v4()}`);
+      const file = files[0];
+      uploadBytes(imageRef, file).then((snapshot) => {
+        getDownloadURL(snapshot.ref).then((src) => {
+          const contentState = editorState.getCurrentContent();
+          const contentStateWithEntity = contentState.createEntity("image", "IMMUTABLE", { src });
+          const entityKey = contentStateWithEntity.getLastCreatedEntityKey();
+          const newEditorState = EditorState.set(editorState, {
+            currentContent: contentStateWithEntity,
+          });
+          setEditorState(AtomicBlockUtils.insertAtomicBlock(newEditorState, entityKey, " "));
+        });
+      });
     }
-    const contentState = editorState.getCurrentContent();
-    const contentStateWithEntity = contentState.createEntity("image", "IMMUTABLE", { src });
-    const entityKey = contentStateWithEntity.getLastCreatedEntityKey();
-    const newEditorState = EditorState.set(editorState, {
-      currentContent: contentStateWithEntity,
-    });
-    setEditorState(AtomicBlockUtils.insertAtomicBlock(newEditorState, entityKey, " "));
   };
   const handleSubmit = async () => {
     const editorContent = convertToRaw(editorState.getCurrentContent());
@@ -138,9 +143,6 @@ function Edit() {
       firstPicture: firstPicture || "",
     });
     navigator("/");
-  };
-  const show = () => {
-    console.log(convertToRaw(editorState.getCurrentContent()));
   };
   return (
     <div className="Createpost-box">
@@ -196,11 +198,12 @@ function Edit() {
               <div
                 onMouseDown={(e) => {
                   e.preventDefault();
-                  handleInsertImage();
+                  onClickInsertImage();
                 }}
                 className="Createpost-toolbar-box"
               >
                 <img className="Createpost-toolbar-img" src="https://cdn-icons-png.flaticon.com/512/739/739249.png" alt="" />
+                <input accept="image/*" type="file" ref={imageInput} onChange={handleInsertImage} style={{ display: "none" }} />
               </div>
               <div
                 disabled={editorState.getUndoStack().size <= 0}
@@ -214,11 +217,6 @@ function Edit() {
             <div onClick={handleSubmit} className="Createpost-next">下一步</div>
           </div>
         </div>
-        {/* <textarea
-          disabled
-          value={stateToHTML(editorState.getCurrentContent())}
-        /> */}
-        {/* <div onClick={show}>show</div> */}
       </div>
     </div>
   );

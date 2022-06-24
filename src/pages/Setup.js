@@ -1,30 +1,26 @@
 import React, { useState, useEffect, useRef } from "react";
-import { useParams, useNavigate } from "react-router-dom";
-import "./Setup.css";
-import { getDoc, doc, updateDoc } from "firebase/firestore";
+import "../Styles/Setup.css";
+import { doc, updateDoc } from "firebase/firestore";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
-import { updateEmail, updateProfile } from "firebase/auth";
+import { updateProfile } from "firebase/auth";
 import { db, auth, storage } from "../firebaseConfig";
+import useGetDocData from "../hooks/useDoc";
+import { useAuth } from "../hooks/useAuth";
 
 function Setup() {
-  const navigator = useNavigate();
-  const { userId } = useParams();
+  const { currentUser } = useAuth();
   const avatarInput = useRef();
   const [selectedImage, setSelectedImage] = useState(null);
   const [previewImageURL, setPreviewImageURL] = useState(null);
   const [name, setName] = useState("");
   const [showCheckBox, setShowCheckBox] = useState(false);
-  if (auth.currentUser?.uid !== userId) {
-    navigator("/home");
-  }
+  const { isLoading, data: pageOwner } = useGetDocData(`users/${currentUser.uid}`);
   useEffect(() => {
-    const getPageOwner = async () => {
-      const docSnap = await getDoc(doc(db, `users/${userId}`));
-      setPreviewImageURL(docSnap.data().photoURL);
-      setName(docSnap.data().name);
-    };
-    getPageOwner();
-  }, []);
+    if (pageOwner) {
+      setPreviewImageURL(pageOwner.photoURL);
+      setName(pageOwner.name);
+    }
+  }, [pageOwner]);
   const uploadAvatar = () => {
     avatarInput.current.click();
   };
@@ -41,7 +37,7 @@ function Setup() {
     if (selectedImage) {
       uploadBytes(imageRef, selectedImage).then((snapshot) => {
         getDownloadURL(snapshot.ref).then((url) => {
-          updateDoc(doc(db, `users/${userId}`), {
+          updateDoc(doc(db, `users/${currentUser.uid}`), {
             name,
             photoURL: url,
           });
@@ -52,7 +48,7 @@ function Setup() {
         });
       });
     } else {
-      updateDoc(doc(db, `users/${userId}`), {
+      updateDoc(doc(db, `users/${currentUser.uid}`), {
         name,
         photoURL: previewImageURL,
       });
@@ -65,7 +61,7 @@ function Setup() {
   };
   const toggleCheckbox = () => {
     setShowCheckBox(false);
-  }
+  };
   return (
     <div className="Setup-box">
       <div className="Setup-background">
