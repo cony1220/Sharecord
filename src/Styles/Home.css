@@ -248,6 +248,9 @@
         width: 90%;
         grid-template-columns: 1fr;
     }
+    .Home-loading-box{
+        width: 90%;
+    }
     .Home-post-container{
         width: 100%;
         grid-column: 1/2;

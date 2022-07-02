@@ -5,7 +5,13 @@ import useGetColData from "../../hooks/useCollection";
 function CategoryList() {
   const { data: categoryList } = useGetColData("category");
   return (
-    <>
+    <div className="Home-label-box">
+      <div className="Home-label-container">
+        <div className="Home-label-image-container">
+          <img className="Home-label-image" src="https://cdn-icons-png.flaticon.com/128/617/617418.png" alt="Label" />
+        </div>
+        <div>分類</div>
+      </div>
       {categoryList.map((item) => (
         <Link to={`/home/${item.name}`} className="Home-category-container item" key={`${item.id}`}>
           <div className="Home-category-image-container">
@@ -14,7 +20,7 @@ function CategoryList() {
           <div>{item.name}</div>
         </Link>
       ))}
-    </>
+    </div>
   );
 }
 export default CategoryList;

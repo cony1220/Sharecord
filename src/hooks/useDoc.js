@@ -16,6 +16,6 @@ const useGetDocData = (ref) => {
     };
     getData();
   }, [ref]);
-  return { isLoading, data };
+  return { isLoading, data, setData };
 };
 export default useGetDocData;

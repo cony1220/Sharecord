@@ -1,0 +1,10 @@
+.Loading-container{
+    display: grid;
+    justify-content: center;
+    align-content: center;
+    min-height: calc(100vh - 54px);
+}
+.Loading-gif{
+    width: 100px;
+    height: 100px;
+}

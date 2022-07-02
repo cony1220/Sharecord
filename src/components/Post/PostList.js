@@ -1,45 +1,13 @@
-import React, { useState, useEffect } from "react";
-import {
-  useParams, useNavigate, useSearchParams, createSearchParams,
-} from "react-router-dom";
+import React from "react";
+import { useOutletContext } from "react-router-dom";
 import CategoryList from "./CategoryList";
 import PostBlock from "./PostBlock";
 import Noposts from "./Noposts";
-import useGetQueryColData from "../../hooks/useQueryCollection";
 
 function Category() {
-  const { categoryPage } = useParams();
-  const navigator = useNavigate();
-  const [search, setSearch] = useState("");
-  const [isCategoryMenu, setIsCategoryMenu] = useState(false);
-  const [searchKeyword] = useSearchParams();
-  const { isLoading: LoadPostList, data: postList, getData } = useGetQueryColData();
-  useEffect(() => {
-    let queryString;
-    if (categoryPage === "all") {
-      queryString = "";
-    } else if (categoryPage === "search") {
-      queryString = { name: "keywords", condition: "array-contains", value: searchKeyword.get("query") };
-    } else {
-      queryString = { name: "categoryName", condition: "==", value: `${categoryPage}` };
-    }
-    getData("posts", queryString);
-    setIsCategoryMenu(false);
-  }, [categoryPage, searchKeyword]);
-  const handleKeywordSearch = () => {
-    if (search) {
-      navigator({
-        pathname: "/home/search",
-        search: createSearchParams({
-          query: search,
-        }).toString(),
-      });
-      setSearch("");
-    }
-  };
-  const toggleCategoryMenu = () => {
-    setIsCategoryMenu((pre) => !pre);
-  };
+  const [
+    postList, isCategoryMenu, toggleCategoryMenu,
+    handleKeywordSearch, search, setSearch] = useOutletContext();
   return (
     <div className="Home-post-container">
       <div className="Home-post-search-container">
@@ -48,15 +16,7 @@ function Category() {
         </div>
         { isCategoryMenu ? (
           <div className="Home-categorymenu-container">
-            <div className="Home-label-box">
-              <div className="Home-label-container">
-                <div className="Home-label-image-container">
-                  <img className="Home-label-image" src="https://cdn-icons-png.flaticon.com/128/617/617418.png" alt="Label" />
-                </div>
-                <div>分類</div>
-              </div>
-              <CategoryList />
-            </div>
+            <CategoryList />
           </div>
         )
           : null}
@@ -73,11 +33,9 @@ function Category() {
           </div>
         </div>
       </div>
-      {postList.length > 0 ? postList.map((item) => (
+      { postList.length > 0 ? postList.map((item) => (
         <PostBlock key={item.id} item={item} />
-      )) : (
-        <Noposts />
-      )}
+      )) : <Noposts />}
     </div>
   );
 }
