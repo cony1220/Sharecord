@@ -30,7 +30,7 @@ Sharecord is a weblog website that you can share story, gain lots of knowledge a
 ## Front-End Technique
 - react
 - react-router-dom
-  - BrowserRouter, Routes, Route, Navigate, Outlet, useNavigate, useParams, createSearchParams, useSearchParams, Link
+  - BrowserRouter, Routes, Route, Navigate, useNavigate, useParams, createSearchParams, useSearchParams, Link
 - react hooks
   - useState、useEffect、useRef
 - redux
