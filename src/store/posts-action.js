@@ -34,12 +34,12 @@ const fetchPostsData = (col, queryString) => async (dispatch) => {
   };
 
   try {
-    const cartData = await fetchData();
+    const postsData = await fetchData();
 
     dispatch(
       postsActions.replacePosts({
         status: "succeed",
-        items: cartData || [],
+        items: postsData || [],
         error: null,
       }),
     );
