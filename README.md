@@ -32,7 +32,8 @@ Sharecord is a weblog website that you can share story, gain lots of knowledge a
 - react-router-dom
   - BrowserRouter, Routes, Route, Navigate, Outlet, useNavigate, useParams, createSearchParams, useSearchParams, Link
 - react hooks
-  - useState、useEffect、useContext、useRef
+  - useState、useEffect、useRef
+- redux
 ## Back-End Technique
 - firebase authentication
 - firebase firestore
