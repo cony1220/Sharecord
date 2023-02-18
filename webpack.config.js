@@ -19,7 +19,24 @@ module.exports = {
     rules: [
       {
         test: /\.css$/i,
+        use: [
+          "style-loader",
+          {
+            loader: "css-loader",
+            options: {
+              importLoaders: 1,
+              modules: {
+                localIdentName: "[name]__[local]__[hash:base64:5]",
+              },
+            },
+          },
+        ],
+        include: /\.module\.css$/i,
+      },
+      {
+        test: /\.css$/i,
         use: ["style-loader", "css-loader"],
+        exclude: /\.module\.css$/i,
       },
       {
         test: /\.m?js$/,

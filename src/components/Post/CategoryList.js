@@ -1,9 +1,24 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Link } from "react-router-dom";
-import useGetColData from "../../hooks/useCollection";
+
+import useHttp from "../../hooks/use-http";
+import { getAllCategories } from "../../lib/api";
 
 function CategoryList() {
-  const { data: categoryList } = useGetColData("category");
+  const {
+    sendRequest,
+    data: categoryList,
+    error,
+  } = useHttp(getAllCategories, true);
+
+  useEffect(() => {
+    sendRequest("category");
+  }, [sendRequest]);
+
+  if (error) {
+    return <p>{error}</p>;
+  }
+
   return (
     <div className="Home-label-box">
       <div className="Home-label-container">
@@ -12,7 +27,7 @@ function CategoryList() {
         </div>
         <div>分類</div>
       </div>
-      {categoryList.map((item) => (
+      {categoryList && categoryList.map((item) => (
         <Link to={`/home/${item.name}`} className="Home-category-container item" key={`${item.id}`}>
           <div className="Home-category-image-container">
             <img className="Home-category" src={item.imgurl} alt={item.name} />

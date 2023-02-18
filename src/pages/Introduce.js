@@ -76,10 +76,10 @@ function Introduce() {
           <a href="https://github.com/cony1220/Sharecord">
             <img className="Introduce-logo" src="https://cdn-icons-png.flaticon.com/512/2111/2111432.png" alt="github" />
           </a>
-          <a href="#">
+          <a href="/">
             <img className="Introduce-logo" src="https://cdn-icons-png.flaticon.com/512/1384/1384017.png" alt="twitter" />
           </a>
-          <a href="#">
+          <a href="/">
             <img className="Introduce-logo" src="https://cdn-icons-png.flaticon.com/512/1384/1384005.png" alt="facebook" />
           </a>
         </div>

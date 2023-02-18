@@ -262,3 +262,9 @@
         display: block;
     }
 }
+
+@media (min-width: 1000px){
+    .Home-categorymenu-container{
+        display: none;
+    }
+}

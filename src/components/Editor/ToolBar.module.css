@@ -1,0 +1,14 @@
+.toolbar {
+  border: 0px;
+  display: grid;
+  grid-template-columns: repeat(5, 30px);
+  grid-template-rows: 30px;
+}
+.toolbar-box {
+  padding: 5px;
+  cursor: pointer;
+}
+.toolbar-img {
+  width: 20px;
+  height: 20px;
+}

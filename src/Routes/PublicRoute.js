@@ -1,9 +1,9 @@
 import React from "react";
 import { Navigate, Outlet } from "react-router-dom";
-import { useAuth } from "../hooks/useAuth";
+import { useSelector } from "react-redux";
 
 function PublicRoute() {
-  const { currentUser } = useAuth();
-  return currentUser ? <Navigate to="/home" replace /> : <Outlet />;
+  const currentUser = useSelector((state) => state.user.user);
+  return currentUser ? <Navigate to="/home/all" replace /> : <Outlet />;
 }
 export default PublicRoute;

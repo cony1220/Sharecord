@@ -1,8 +1,9 @@
 .Header{
     position: fixed;
+    top: 0;
     width: 100%;
     background-color: #d0d7e4;
-    z-index: 100;
+    z-index: 9;
     border-bottom: 1px solid #e9dcdc;
 }
 .Header-container{

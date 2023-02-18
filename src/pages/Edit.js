@@ -1,9 +1,16 @@
-import React, { useState, useEffect, useRef } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import {
+  Link, useNavigate, useParams, Navigate,
+} from "react-router-dom";
+
 import "../Styles/Createpost.css";
 import {
-  Editor, EditorState, RichUtils, convertToRaw,
-  AtomicBlockUtils, CompositeDecorator, convertFromRaw,
+  Editor,
+  EditorState,
+  RichUtils,
+  convertToRaw,
+  AtomicBlockUtils,
+  convertFromRaw,
 } from "draft-js";
 import "draft-js/dist/Draft.css";
 import { stateToHTML } from "draft-js-export-html";
@@ -11,47 +18,42 @@ import { doc, updateDoc } from "firebase/firestore";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { v4 } from "uuid";
 import moment from "moment";
+import { useSelector } from "react-redux";
 import { db, storage, auth } from "../firebaseConfig";
-import mediaBlockRenderer from "../components/mediaBlockRenderer";
-import useGetColData from "../hooks/useCollection";
-import useGetDocData from "../hooks/useDoc";
-import Loading from "../components/Loading";
+import mediaBlockRenderer from "../components/Editor/mediaBlockRenderer";
+import Loading from "../components/UI/Loading";
+import useHttp from "../hooks/use-http";
+import { getAllCategories, getDocumentData } from "../lib/api";
+import ToolBar from "../components/Editor/ToolBar";
+import decorator from "../components/Editor/mediaDecorator";
 
-function findImageEntities(contentBlock, callback, contentState) {
-  contentBlock.findEntityRanges(
-    (character) => {
-      const entityKey = character.getEntity();
-      return (
-        entityKey !== null
-        && contentState.getEntity(entityKey).getType().toLowerCase() === "image"
-      );
-    },
-    callback,
-  );
-}
-function Image(props) {
-  const {
-    src,
-  } = props.contentState.getEntity(props.entityKey).getData();
-  return (
-    <img src={src} alt="" />
-  );
-}
 function Edit() {
   const { postId } = useParams();
   const [categoryName, setCategoryName] = useState("");
   const [title, setTitle] = useState("");
-  const imageInput = useRef();
-  const navigator = useNavigate();
+  const navigate = useNavigate();
   const [editorState, setEditorState] = useState(() => EditorState.createEmpty());
-  const decorator = new CompositeDecorator([
-    {
-      strategy: findImageEntities,
-      component: Image,
-    },
-  ]);
-  const { isLoading: LoadCategory, data: categoryList } = useGetColData("category");
-  const { isLoading: LoadPost, data: post } = useGetDocData(`posts/${postId}`);
+  const currentUser = useSelector((state) => state.user.user);
+
+  const {
+    sendRequest: getcategoryList,
+    data: categoryList,
+    isLoading: LoadCategory,
+    error: categoryListError,
+  } = useHttp(getAllCategories, true);
+
+  const {
+    sendRequest: getPost,
+    data: post,
+    isLoading: LoadPost,
+    error: postError,
+  } = useHttp(getDocumentData, true);
+
+  useEffect(() => {
+    getcategoryList("category");
+    getPost(`posts/${postId}`);
+  }, [getcategoryList, getPost]);
+
   useEffect(() => {
     if (post) {
       setCategoryName(post.categoryName);
@@ -63,8 +65,9 @@ function Edit() {
       }
     }
   }, [post]);
-  const handleKeyCommand = (command, editorState) => {
-    const newState = RichUtils.handleKeyCommand(editorState, command);
+
+  const handleKeyCommand = (command, editorStateParam) => {
+    const newState = RichUtils.handleKeyCommand(editorStateParam, command);
     if (newState) {
       setEditorState(newState);
       return "handle";
@@ -72,31 +75,42 @@ function Edit() {
 
     return "not-handled";
   };
+
   const handleTogggleClick = (e, inlineStyle) => {
     e.preventDefault();
     setEditorState(RichUtils.toggleInlineStyle(editorState, inlineStyle));
   };
-  const onClickInsertImage = () => {
-    imageInput.current.click();
-  };
-  const handleInsertImage = () => {
-    const files = imageInput.current.files || [];
-    if (files.length > 0) {
-      const imageRef = ref(storage, `post-images/${auth.currentUser.uid}/${v4()}`);
-      const file = files[0];
-      uploadBytes(imageRef, file).then((snapshot) => {
-        getDownloadURL(snapshot.ref).then((src) => {
-          const contentState = editorState.getCurrentContent();
-          const contentStateWithEntity = contentState.createEntity("image", "IMMUTABLE", { src });
-          const entityKey = contentStateWithEntity.getLastCreatedEntityKey();
-          const newEditorState = EditorState.set(editorState, {
-            currentContent: contentStateWithEntity,
-          });
-          setEditorState(AtomicBlockUtils.insertAtomicBlock(newEditorState, entityKey, " "));
-        });
-      });
+
+  const undoHandler = () => {
+    if (editorState.getUndoStack().size > 0) {
+      setEditorState(EditorState.undo(editorState));
     }
   };
+
+  const handleInsertImage = (file) => {
+    const imageRef = ref(
+      storage,
+      `post-images/${auth.currentUser.uid}/${v4()}`,
+    );
+    uploadBytes(imageRef, file).then((snapshot) => {
+      getDownloadURL(snapshot.ref).then((src) => {
+        const contentState = editorState.getCurrentContent();
+        const contentStateWithEntity = contentState.createEntity(
+          "image",
+          "IMMUTABLE",
+          { src },
+        );
+        const entityKey = contentStateWithEntity.getLastCreatedEntityKey();
+        const newEditorState = EditorState.set(editorState, {
+          currentContent: contentStateWithEntity,
+        });
+        setEditorState(
+          AtomicBlockUtils.insertAtomicBlock(newEditorState, entityKey, " "),
+        );
+      });
+    });
+  };
+
   const handleSubmit = async () => {
     const editorContent = convertToRaw(editorState.getCurrentContent());
     let pureText = "";
@@ -126,16 +140,35 @@ function Edit() {
       categoryName,
       title,
       keywords,
-      stateContent: JSON.stringify(convertToRaw(editorState.getCurrentContent())),
+      stateContent: JSON.stringify(
+        convertToRaw(editorState.getCurrentContent()),
+      ),
       htmlContent: stateToHTML(editorState.getCurrentContent()),
       pureText,
       firstPicture: firstPicture || "",
     });
-    navigator("/");
+    navigate("/home/all");
   };
+
+  if (categoryListError) {
+    return <div className="center">{categoryListError}</div>;
+  }
+
+  if (postError) {
+    return <div className="center">{postError}</div>;
+  }
+
+  if (post) {
+    if (post.author.uid !== currentUser.uid) {
+      return <Navigate to="/" replace />;
+    }
+  }
+
   return (
     <div className="Createpost-box">
-      {LoadCategory && LoadPost ? <Loading /> : (
+      {LoadCategory || LoadPost ? (
+        <Loading />
+      ) : (
         <>
           <div className="Createpost-background" />
           <div className="Createpost-content-box">
@@ -146,17 +179,31 @@ function Edit() {
                   value={categoryName}
                   onChange={(e) => setCategoryName(e.target.value)}
                 >
-                  <option value="" disabled hidden>選擇類別</option>
-                  {categoryList.map((item) => <option value={item.name} key={`${item.id}`}>{item.name}</option>)}
+                  <option value="" disabled hidden>
+                    選擇類別
+                  </option>
+                  {categoryList.map((item) => (
+                    <option value={item.name} key={`${item.id}`}>
+                      {item.name}
+                    </option>
+                  ))}
                 </select>
               </div>
               <div className="Createpost-personal-information item">
                 <div className="Createpost-avatar-container">
-                  <img className="Createpost-avatar" src={post.author?.photoURL} alt="" />
+                  <img
+                    className="Createpost-avatar"
+                    src={post.author?.photoURL}
+                    alt=""
+                  />
                 </div>
                 <div className="Createpost-information-container">
-                  <div className="Createpost-name">{ post.author?.name}</div>
-                  <div className="Createpost-date">{moment(post.createTime?.toDate()).format("YYYY/MM/DD h:mm a")}</div>
+                  <div className="Createpost-name">{post.author?.name}</div>
+                  <div className="Createpost-date">
+                    {moment(post.createTime?.toDate()).format(
+                      "YYYY/MM/DD h:mm a",
+                    )}
+                  </div>
                 </div>
               </div>
               <div className="Createpost-title item">
@@ -176,36 +223,17 @@ function Edit() {
                 />
               </div>
               <div className="Createpost-toolbar-container">
-                <div className="Createpost-toolbar">
-                  <div onMouseDown={(e) => handleTogggleClick(e, "BOLD")} className="Createpost-toolbar-box">
-                    <img className="Createpost-toolbar-img" src="https://cdn-icons-png.flaticon.com/512/5099/5099193.png" alt="" />
-                  </div>
-                  <div onMouseDown={(e) => handleTogggleClick(e, "ITALIC")} className="Createpost-toolbar-box">
-                    <img className="Createpost-toolbar-img" src="https://cdn-icons-png.flaticon.com/128/5099/5099214.png" alt="" />
-                  </div>
-                  <div onMouseDown={(e) => handleTogggleClick(e, "UNDERLINE")} className="Createpost-toolbar-box">
-                    <img className="Createpost-toolbar-img" src="https://cdn-icons-png.flaticon.com/512/5099/5099204.png" alt="" />
-                  </div>
-                  <div
-                    onMouseDown={(e) => {
-                      e.preventDefault();
-                      onClickInsertImage();
-                    }}
-                    className="Createpost-toolbar-box"
-                  >
-                    <img className="Createpost-toolbar-img" src="https://cdn-icons-png.flaticon.com/512/739/739249.png" alt="" />
-                    <input accept="image/*" type="file" ref={imageInput} onChange={handleInsertImage} style={{ display: "none" }} />
-                  </div>
-                  <div
-                    disabled={editorState.getUndoStack().size <= 0}
-                    onMouseDown={() => setEditorState(EditorState.undo(editorState))}
-                    className="Createpost-toolbar-box"
-                  >
-                    <img className="Createpost-toolbar-img" src="https://cdn-icons-png.flaticon.com/512/44/44426.png" alt="" />
-                  </div>
+                <ToolBar
+                  handleTogggleClick={handleTogggleClick}
+                  handleInsertImage={handleInsertImage}
+                  undoHandler={undoHandler}
+                />
+                <Link to="/home/all" className="Createpost-cancel">
+                  取消
+                </Link>
+                <div onClick={handleSubmit} className="Createpost-next">
+                  下一步
                 </div>
-                <Link to="/" className="Createpost-cancel">取消</Link>
-                <div onClick={handleSubmit} className="Createpost-next">下一步</div>
               </div>
             </div>
           </div>

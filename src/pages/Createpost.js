@@ -1,37 +1,48 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
+
 import "../Styles/Createpost.css";
 import {
-  Editor, EditorState, RichUtils, convertToRaw, AtomicBlockUtils,
+  Editor,
+  EditorState,
+  RichUtils,
+  convertToRaw,
+  AtomicBlockUtils,
 } from "draft-js";
 import "draft-js/dist/Draft.css";
 import { stateToHTML } from "draft-js-export-html";
-import {
-  collection, addDoc, Timestamp,
-} from "firebase/firestore";
+import { collection, addDoc, Timestamp } from "firebase/firestore";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { v4 } from "uuid";
 import moment from "moment";
-import { db, storage, auth } from "../firebaseConfig";
-import mediaBlockRenderer from "../components/mediaBlockRenderer";
-import useGetColData from "../hooks/useCollection";
-import { useAuth } from "../hooks/useAuth";
-import useGetDocData from "../hooks/useDoc";
-import Loading from "../components/Loading";
+import { useSelector } from "react-redux";
+import { db, storage } from "../firebaseConfig";
+import mediaBlockRenderer from "../components/Editor/mediaBlockRenderer";
+import Loading from "../components/UI/Loading";
+import useHttp from "../hooks/use-http";
+import { getAllCategories } from "../lib/api";
+import ToolBar from "../components/Editor/ToolBar";
 
 function Createpost() {
-  const { currentUser } = useAuth();
-  const { isLoading: LoadCategory, data: categoryList } = useGetColData("category");
-  const { isLoading: LoadPageOwner, data: pageOwner } = useGetDocData(`users/${currentUser.uid}`);
   const [categoryName, setCategoryName] = useState("");
   const [title, setTitle] = useState("");
-  const imageInput = useRef();
-  const navigator = useNavigate();
-  const [editorState, setEditorState] = useState(
-    () => EditorState.createEmpty(),
-  );
-  const handleKeyCommand = (command, editorState) => {
-    const newState = RichUtils.handleKeyCommand(editorState, command);
+  const [editorState, setEditorState] = useState(() => EditorState.createEmpty());
+  const navigate = useNavigate();
+  const currentUser = useSelector((state) => state.user.user);
+
+  const {
+    sendRequest,
+    data: categoryList,
+    isLoading: LoadCategory,
+    error,
+  } = useHttp(getAllCategories, true);
+
+  useEffect(() => {
+    sendRequest("category");
+  }, [sendRequest]);
+
+  const handleKeyCommand = (command, editorStateParam) => {
+    const newState = RichUtils.handleKeyCommand(editorStateParam, command);
     if (newState) {
       setEditorState(newState);
       return "handle";
@@ -39,31 +50,39 @@ function Createpost() {
 
     return "not-handled";
   };
+
   const handleTogggleClick = (e, inlineStyle) => {
     e.preventDefault();
     setEditorState(RichUtils.toggleInlineStyle(editorState, inlineStyle));
   };
-  const onClickInsertImage = () => {
-    imageInput.current.click();
-  };
-  const handleInsertImage = () => {
-    const files = imageInput.current.files || [];
-    if (files.length > 0) {
-      const imageRef = ref(storage, `post-images/${auth.currentUser.uid}/${v4()}`);
-      const file = files[0];
-      uploadBytes(imageRef, file).then((snapshot) => {
-        getDownloadURL(snapshot.ref).then((src) => {
-          const contentState = editorState.getCurrentContent();
-          const contentStateWithEntity = contentState.createEntity("image", "IMMUTABLE", { src });
-          const entityKey = contentStateWithEntity.getLastCreatedEntityKey();
-          const newEditorState = EditorState.set(editorState, {
-            currentContent: contentStateWithEntity,
-          });
-          setEditorState(AtomicBlockUtils.insertAtomicBlock(newEditorState, entityKey, " "));
-        });
-      });
+
+  const undoHandler = () => {
+    if (editorState.getUndoStack().size > 0) {
+      setEditorState(EditorState.undo(editorState));
     }
   };
+
+  const handleInsertImage = (file) => {
+    const imageRef = ref(storage, `post-images/${currentUser.uid}/${v4()}`);
+    uploadBytes(imageRef, file).then((snapshot) => {
+      getDownloadURL(snapshot.ref).then((src) => {
+        const contentState = editorState.getCurrentContent();
+        const contentStateWithEntity = contentState.createEntity(
+          "image",
+          "IMMUTABLE",
+          { src },
+        );
+        const entityKey = contentStateWithEntity.getLastCreatedEntityKey();
+        const newEditorState = EditorState.set(editorState, {
+          currentContent: contentStateWithEntity,
+        });
+        setEditorState(
+          AtomicBlockUtils.insertAtomicBlock(newEditorState, entityKey, " "),
+        );
+      });
+    });
+  };
+
   const handleSubmit = async () => {
     const editorContent = convertToRaw(editorState.getCurrentContent());
     let pureText = "";
@@ -93,7 +112,9 @@ function Createpost() {
       categoryName,
       title,
       keywords,
-      stateContent: JSON.stringify(convertToRaw(editorState.getCurrentContent())),
+      stateContent: JSON.stringify(
+        convertToRaw(editorState.getCurrentContent()),
+      ),
       htmlContent: stateToHTML(editorState.getCurrentContent()),
       pureText,
       firstPicture: firstPicture || "",
@@ -101,16 +122,25 @@ function Createpost() {
       collectby: [],
       createTime: Timestamp.now(),
       author: {
-        name: auth.currentUser.displayName || "使用者",
-        uid: auth.currentUser.uid,
-        photoURL: auth.currentUser.photoURL || "https://cdn-icons-png.flaticon.com/512/847/847969.png",
+        name: currentUser.displayName || "使用者",
+        uid: currentUser.uid,
+        photoURL:
+          currentUser.photoURL
+          || "https://cdn-icons-png.flaticon.com/512/847/847969.png",
       },
     });
-    navigator("/");
+    navigate("/home/all");
   };
+
+  if (error) {
+    return <div className="center">{error}</div>;
+  }
+
   return (
     <div className="Createpost-box">
-      {LoadCategory && LoadPageOwner ? <Loading /> : (
+      {LoadCategory ? (
+        <Loading />
+      ) : (
         <>
           <div className="Createpost-background" />
           <div className="Createpost-content-box">
@@ -121,17 +151,35 @@ function Createpost() {
                   defaultValue=""
                   onChange={(e) => setCategoryName(e.target.value)}
                 >
-                  <option value="" disabled hidden>選擇類別</option>
-                  {categoryList.map((item) => <option value={item.name} key={`${item.id}`}>{item.name}</option>)}
+                  <option value="" disabled hidden>
+                    選擇類別
+                  </option>
+                  {categoryList.map((item) => (
+                    <option value={item.name} key={`${item.id}`}>
+                      {item.name}
+                    </option>
+                  ))}
                 </select>
               </div>
               <div className="Createpost-personal-information item">
                 <div className="Createpost-avatar-container">
-                  <img className="Createpost-avatar" src={pageOwner && pageOwner.photoURL} alt="" />
+                  <img
+                    className="Createpost-avatar"
+                    src={
+                      currentUser
+                      && (currentUser.photoURL
+                      || "https://cdn-icons-png.flaticon.com/512/847/847969.png")
+                    }
+                    alt=""
+                  />
                 </div>
                 <div className="Createpost-information-container">
-                  <div className="Createpost-name">{pageOwner && pageOwner.name}</div>
-                  <div className="Createpost-date">{moment().format("YYYY/MM/DD h:mm a")}</div>
+                  <div className="Createpost-name">
+                    {currentUser && (currentUser.displayName || "使用者")}
+                  </div>
+                  <div className="Createpost-date">
+                    {moment().format("YYYY/MM/DD h:mm a")}
+                  </div>
                 </div>
               </div>
               <div className="Createpost-title item">
@@ -139,6 +187,7 @@ function Createpost() {
                   type="text"
                   className="Createpost-input-title"
                   placeholder="標題"
+                  value={title}
                   onChange={(e) => setTitle(e.target.value)}
                 />
               </div>
@@ -152,36 +201,17 @@ function Createpost() {
                 />
               </div>
               <div className="Createpost-toolbar-container">
-                <div className="Createpost-toolbar">
-                  <div onMouseDown={(e) => handleTogggleClick(e, "BOLD")} className="Createpost-toolbar-box">
-                    <img className="Createpost-toolbar-img" src="https://cdn-icons-png.flaticon.com/512/5099/5099193.png" alt="" />
-                  </div>
-                  <div onMouseDown={(e) => handleTogggleClick(e, "ITALIC")} className="Createpost-toolbar-box">
-                    <img className="Createpost-toolbar-img" src="https://cdn-icons-png.flaticon.com/128/5099/5099214.png" alt="" />
-                  </div>
-                  <div onMouseDown={(e) => handleTogggleClick(e, "UNDERLINE")} className="Createpost-toolbar-box">
-                    <img className="Createpost-toolbar-img" src="https://cdn-icons-png.flaticon.com/512/5099/5099204.png" alt="" />
-                  </div>
-                  <div
-                    onMouseDown={(e) => {
-                      e.preventDefault();
-                      onClickInsertImage();
-                    }}
-                    className="Createpost-toolbar-box"
-                  >
-                    <img className="Createpost-toolbar-img" src="https://cdn-icons-png.flaticon.com/512/739/739249.png" alt="" />
-                  </div>
-                  <input accept="image/*" type="file" ref={imageInput} onChange={handleInsertImage} style={{ display: "none" }} />
-                  <div
-                    disabled={editorState.getUndoStack().size <= 0}
-                    onMouseDown={() => setEditorState(EditorState.undo(editorState))}
-                    className="Createpost-toolbar-box"
-                  >
-                    <img className="Createpost-toolbar-img" src="https://cdn-icons-png.flaticon.com/512/44/44426.png" alt="" />
-                  </div>
+                <ToolBar
+                  handleTogggleClick={handleTogggleClick}
+                  handleInsertImage={handleInsertImage}
+                  undoHandler={undoHandler}
+                />
+                <Link to="/home/all" className="Createpost-cancel">
+                  取消
+                </Link>
+                <div onClick={handleSubmit} className="Createpost-next">
+                  下一步
                 </div>
-                <Link to="/" className="Createpost-cancel">取消</Link>
-                <div onClick={handleSubmit} className="Createpost-next">下一步</div>
               </div>
             </div>
           </div>

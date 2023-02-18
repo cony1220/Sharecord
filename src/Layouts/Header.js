@@ -2,11 +2,11 @@ import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "./Header.css";
 import { signOut } from "firebase/auth";
+import { useSelector } from "react-redux";
 import { auth } from "../firebaseConfig";
-import { useAuth } from "../hooks/useAuth";
 
 function Header() {
-  const { currentUser } = useAuth();
+  const currentUser = useSelector((state) => state.user.user);
   const navigator = useNavigate();
   const logOut = () => {
     signOut(auth).then(() => {
@@ -16,7 +16,7 @@ function Header() {
   return (
     <div className="Header">
       <div className="Header-container">
-        <Link to="/home" className="Header-icon">Sharecord</Link>
+        <Link to="/home/all" className="Header-icon">Sharecord</Link>
         {currentUser ? (
           <>
             <Link to="/createpost" className="Header-createpost-link">

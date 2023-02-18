@@ -17,4 +17,5 @@ const usePostContent = (ref) => {
   }, []);
   return { isLoading, data };
 };
+
 export default usePostContent;

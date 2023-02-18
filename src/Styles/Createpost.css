@@ -89,25 +89,12 @@
 }
 .Createpost-text-container{
     grid-row: 4/5;
+    min-width: 100%;
 }
 .Createpost-toolbar-container{
     display: grid;
     grid-template-columns: 150px 1fr 52px 52px;
     grid-row: 5/6;
-}
-.Createpost-toolbar{
-    border: 0px;
-    display: grid;
-    grid-template-columns: repeat(5, 30px);
-    grid-template-rows: 30px;
-}
-.Createpost-toolbar-box{
-    padding: 5px;
-    cursor: pointer;
-}
-.Createpost-toolbar-img{
-    width: 20px;
-    height: 20px;
 }
 .Createpost-cancel{
     padding: 6px 5px 6px;

@@ -2,7 +2,7 @@ import React from "react";
 
 function NoMatch() {
   return (
-    <div>404</div>
+    <div className="center">404</div>
   );
 }
 export default NoMatch;
