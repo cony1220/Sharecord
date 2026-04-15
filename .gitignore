@@ -1,4 +1,5 @@
-node_modules
-firebaseConfig.js
-.vscode
-.firebase
+node_modules/
+.vscode/
+.firebase/
+dist/
+.env
