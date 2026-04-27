@@ -13,11 +13,8 @@ function Home() {
   const { categoryPage } = useParams();
   const [searchKeyword] = useSearchParams();
   const dispatch = useDispatch();
-  const posts = useSelector((state) => state.posts);
+  const { status, error } = useSelector((state) => state.posts);
 
-  if (posts.error) {
-    return <div className="center">{posts.error}</div>;
-  }
   useEffect(() => {
     let queryString;
 
@@ -26,16 +23,20 @@ function Home() {
     } else if (categoryPage === "search") {
       queryString = { name: "keywords", condition: "array-contains", value: searchKeyword.get("query") };
     } else {
-      queryString = { name: "categoryName", condition: "==", value: `${categoryPage}` };
+      queryString = { name: "categoryId", condition: "==", value: `${categoryPage}` };
     }
 
     dispatch(fetchPostsData("posts", queryString));
-    dispatch(uiActions.close());
+    dispatch(uiActions.closeCategoryMenu());
   }, [categoryPage, searchKeyword, dispatch]);
+
+  if (error) {
+    return <div className="center">{error}</div>;
+  }
 
   return (
     <div className="Home-box">
-      {posts.status === "loading" ? (
+      {status === "loading" ? (
         <Loading />
       ) : (
         <>

@@ -2,37 +2,62 @@ import React from "react";
 import { Link } from "react-router-dom";
 import moment from "moment";
 import PropTypes from "prop-types";
+import likeIcon from "../../assets/icons/like.png";
+import commentIcon from "../../assets/icons/comment.png";
+import defaultAvatar from "../../assets/icons/default-avatar.png";
 
 function PostItem({ item }) {
+  const {
+    id,
+    title = "",
+    pureText = "",
+    categoryName = "",
+    createTime,
+    firstPicture,
+    likeby = [],
+    commentsCount = 0,
+    author = {},
+  } = item || {};
+
+  const avatar = author.photoURL || defaultAvatar;
+
   return (
-    <Link to={`/post/${item.id}`} key={item.id}>
+    <Link to={`/post/${id}`}>
       <div className="Home-post-box">
         <div className="Home-post-information item">
           <div className="Home-post-avatar-container">
-            <img className="Home-post-avatar" src={item.author.photoURL} alt="" />
+            <img className="Home-post-avatar" src={avatar} alt="avatar" />
           </div>
           <div className="Home-post-time">
-            {item.categoryName}
+            {categoryName}
             ・
-            {moment(Date.parse(item.createTime)).format("YYYY/MM/DD h:mm a")}
+            {createTime
+              ? moment(createTime).format("YYYY/MM/DD h:mm a")
+              : ""}
           </div>
         </div>
+
+        {/* content */}
         <div className="Home-post-content-container">
-          <div className="Home-post-title">{item.title}</div>
-          <div className="Home-post-text">{item.pureText}</div>
+          <div className="Home-post-title">{title}</div>
+          <div className="Home-post-text">{pureText}</div>
+
+          {/* like / comment */}
           <div className="Home-post-like-message-container">
             <div className="Home-post-like-container">
-              <img className="Home-post-like" src="https://cdn-icons-png.flaticon.com/128/1029/1029132.png" alt="讚" />
+              <img className="Home-post-like" src={likeIcon} alt="讚" />
             </div>
-            <div>{item.likeby.length}</div>
+            <div>{likeby.length}</div>
             <div className="Home-post-message-container">
-              <img className="Home-post-message" src="https://cdn-icons-png.flaticon.com/512/2190/2190552.png" alt="留言" />
+              <img className="Home-post-message" src={commentIcon} alt="留言" />
             </div>
-            <div>{item.commentsCount || 0}</div>
+            <div>{commentsCount}</div>
           </div>
-          {item.firstPicture && (
+
+          {/* preview image */}
+          {firstPicture && (
           <div className="Home-post-photo-container">
-            <img className="Home-post-photo" src={item.firstPicture} alt="" />
+            <img className="Home-post-photo" src={firstPicture} alt="post" />
           </div>
           )}
         </div>

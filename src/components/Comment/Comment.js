@@ -8,6 +8,7 @@ import {
   collection,
   Timestamp,
 } from "firebase/firestore";
+
 import { useSelector } from "react-redux";
 import { db } from "../../firebaseConfig";
 import useComments from "../../hooks/useComments";
@@ -15,110 +16,83 @@ import CommentItem from "./CommentItem";
 import classes from "./Comment.module.css";
 
 function Comment() {
-  const [commentContent, setCommentContent] = useState("");
+  const [content, setContent] = useState("");
+  const [activeId, setActiveId] = useState(null);
+  const [mode, setMode] = useState(null); // "menu" | "edit" | null
   const { postId } = useParams();
-  const currentUser = useSelector((state) => state.user.user);
-  const { isLoading: LoadComments, data: comments } = useComments(
+  const { auth: authUser, profile } = useSelector((state) => state.user);
+  const { isLoading, comments } = useComments(
     `posts/${postId}/comments`,
   );
-  const [isMenu, setIsMenu] = useState(false);
-  const [isEdit, setIsEdit] = useState(false);
-  const [clickedCommentId, setClickedCommentId] = useState("");
 
-  const toggleMenu = (id) => {
-    if (isEdit) {
-      setIsEdit(false);
-    }
-    if (clickedCommentId === id) {
-      setIsMenu((pre) => !pre);
-    } else if (isMenu === false) {
-      setIsMenu((pre) => !pre);
-    }
-    setClickedCommentId(id);
+  const handleSubmit = async () => {
+    if (!content.trim() || !authUser?.uid) return;
+
+    const batch = writeBatch(db);
+    const ref = collection(db, `posts/${postId}/comments`);
+
+    batch.update(doc(db, `posts/${postId}`), {
+      commentsCount: increment(1),
+    });
+
+    batch.set(doc(ref), {
+      content,
+      createTime: Timestamp.now(),
+      author: {
+        uid: authUser.uid,
+        name: profile?.name,
+        photoURL: profile?.photoURL,
+      },
+    });
+
+    await batch.commit();
+    setContent("");
   };
 
-  const closeMenu = () => {
-    setIsMenu(false);
-  };
-
-  const openEdit = () => {
-    setIsEdit(true);
-  };
-
-  const closeEdit = () => {
-    setIsEdit(false);
-  };
-
-  const commentSubmit = async () => {
-    if (commentContent) {
-      const batch = writeBatch(db);
-      const ref = collection(db, `posts/${postId}/comments`);
-      batch.update(doc(db, `posts/${postId}`), {
-        commentsCount: increment(1),
-      });
-      batch.set(doc(ref), {
-        content: commentContent,
-        createTime: Timestamp.now(),
-        author: {
-          uid: currentUser.uid,
-          name: currentUser.displayName || "使用者",
-          photoURL:
-            currentUser.photoURL
-            || "https://cdn-icons-png.flaticon.com/512/847/847969.png",
-        },
-      });
-      await batch.commit();
-      setCommentContent("");
-    }
-  };
-
-  if (LoadComments) {
+  if (isLoading) {
     return <div className="center">loading...</div>;
   }
 
   return (
     <div className={classes["message-container"]}>
       <div className={classes["message-title"]}>留言</div>
+
+      {/* input */}
       <div className={classes["user-message-box"]}>
         <img
           className={classes["user-message-avatar"]}
-          src={
-            currentUser
-            && (currentUser.photoURL
-              || "https://cdn-icons-png.flaticon.com/512/847/847969.png")
-          }
-          alt=""
+          src={profile?.photoURL}
+          alt="avatar"
         />
         <div className={classes["user-message-input-container"]}>
           <textarea
             className={classes["user-message-input"]}
             placeholder="撰寫留言"
-            value={commentContent}
-            onChange={(e) => setCommentContent(e.target.value)}
+            value={content}
+            onChange={(e) => setContent(e.target.value)}
           />
           <button
             type="button"
-            onClick={commentSubmit}
+            onClick={handleSubmit}
             className={`${classes["user-message-next"]} ${
-              !commentContent && classes.gray
+              !content && classes.gray
             }`}
-            disabled={!commentContent}
+            disabled={!content.trim()}
           >
             送出
           </button>
         </div>
       </div>
+
+      {/* list */}
       {comments.map((item) => (
         <CommentItem
           key={item.id}
           item={item}
-          isMenu={isMenu}
-          closeMenu={closeMenu}
-          toggleMenu={toggleMenu}
-          clickedCommentId={clickedCommentId}
-          isEdit={isEdit}
-          openEdit={openEdit}
-          closeEdit={closeEdit}
+          activeId={activeId}
+          mode={mode}
+          setActiveId={setActiveId}
+          setMode={setMode}
         />
       ))}
     </div>

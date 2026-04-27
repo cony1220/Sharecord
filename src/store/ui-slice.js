@@ -2,13 +2,13 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const uiSlice = createSlice({
   name: "ui",
-  initialState: { categoryIsVisible: false },
+  initialState: { isCategoryMenuOpen: false },
   reducers: {
-    toggle(state) {
-      state.categoryIsVisible = !state.categoryIsVisible;
+    toggleCategoryMenu(state) {
+      state.isCategoryMenuOpen = !state.isCategoryMenuOpen;
     },
-    close(state) {
-      state.categoryIsVisible = false;
+    closeCategoryMenu(state) {
+      state.isCategoryMenuOpen = false;
     },
   },
 });

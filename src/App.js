@@ -1,12 +1,10 @@
-import React, { Suspense, useEffect } from "react";
+import React, { useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
 import { onAuthStateChanged } from "firebase/auth";
 import { useDispatch } from "react-redux";
 import { userActions } from "./store/user-slice";
 import { auth } from "./firebaseConfig";
-import Header from "./Layouts/Header";
-import Footer from "./Layouts/Footer";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Personal from "./pages/Personal";
@@ -14,9 +12,10 @@ import NoMatch from "./pages/NoMatch";
 import Introduce from "./pages/Introduce";
 import ProtectedRoute from "./Routes/ProtectedRoute";
 import PublicRoute from "./Routes/PublicRoute";
-import Profile from "./pages/Profile";
+import EditProfile from "./pages/EditProfile";
 import My from "./pages/My";
-import Loading from "./components/UI/Loading";
+import MainLayout from "./Layouts/MainLayout";
+import { getDocumentData } from "./lib/api";
 
 const Createpost = React.lazy(
   () => import(
@@ -46,44 +45,59 @@ function App() {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    const unsub = onAuthStateChanged(auth, (user) => {
-      if (user) {
-        dispatch(
-          userActions.user({
-            displayName: user.displayName,
-            uid: user.uid,
-            photoURL: user.photoURL,
-          }),
-        );
-      } else {
-        dispatch(userActions.user(null));
+    const unsub = onAuthStateChanged(auth, async (user) => {
+      if (!user) {
+        dispatch(userActions.clearUser());
+        return;
       }
+
+      // auth（登入資訊）
+      dispatch(
+        userActions.setAuth({
+          uid: user.uid,
+          email: user.email,
+        }),
+      );
+
+      try {
+        // profile（Firestore）
+        const profile = await getDocumentData(`users/${user.uid}`);
+
+        dispatch(userActions.setProfile({ ...profile }));
+      } catch (err) {
+        console.error("fetch profile error", err);
+      }
+
+      dispatch(userActions.setAuthReady(true));
     });
     return unsub;
-  }, []);
+  }, [dispatch]);
 
   return (
     <Router>
-      <Header />
-      <Suspense fallback={<Loading />}>
-        <Routes>
+      <Routes>
+        <Route element={<MainLayout />}>
+          {/* Public */}
           <Route element={<PublicRoute />}>
             <Route path="/" element={<Introduce />} />
             <Route path="login" element={<Login />} />
           </Route>
+
+          {/* Protected */}
           <Route element={<ProtectedRoute />}>
             <Route path="home/:categoryPage" element={<Home />} />
             <Route path="createpost" element={<Createpost />} />
             <Route path="post/:postId" element={<Post />} />
             <Route path="personal/:userId" element={<Personal />} />
             <Route path="edit/:postId" element={<Edit />} />
-            <Route path="profile" element={<Profile />} />
+            <Route path="profile/edit" element={<EditProfile />} />
             <Route path="my" element={<My />} />
           </Route>
+
+          {/* 404 */}
           <Route path="*" element={<NoMatch status={404} />} />
-        </Routes>
-      </Suspense>
-      <Footer />
+        </Route>
+      </Routes>
     </Router>
   );
 }

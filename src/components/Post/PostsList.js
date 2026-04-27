@@ -6,42 +6,50 @@ import CategoryList from "./CategoryList";
 import PostItem from "./PostItem";
 import Noposts from "./Noposts";
 import { uiActions } from "../../store/ui-slice";
+import menuIcon from "../../assets/icons/hamburger.png";
+import searchIcon from "../../assets/icons/search.png";
 
 function PostsList() {
   const navigate = useNavigate();
   const [search, setSearch] = useState("");
   const dispatch = useDispatch();
-  const category = useSelector((state) => state.ui);
-  const posts = useSelector((state) => state.posts);
+  const isCategoryMenuOpen = useSelector(
+    (state) => state.ui.isCategoryMenuOpen,
+  );
+  const posts = useSelector((state) => state.posts.items);
 
   const toggleCategoryMenu = () => {
-    dispatch(uiActions.toggle());
+    dispatch(uiActions.toggleCategoryMenu());
   };
 
   const keywordSearchHandler = () => {
-    if (search) {
-      navigate({
-        pathname: "/home/search",
-        search: createSearchParams({
-          query: search,
-        }).toString(),
-      });
-      setSearch("");
-    }
+    const keyword = search.trim();
+    if (!keyword) return;
+
+    navigate({
+      pathname: "/home/search",
+      search: createSearchParams({
+        query: keyword,
+      }).toString(),
+    });
+
+    setSearch("");
   };
 
   return (
     <div className="Home-post-container">
       <div className="Home-post-search-container">
+        {/* 手機 menu */}
         <div onClick={toggleCategoryMenu} className="Home-menu-icon-container">
-          <img className="Home-menu-icon" src="https://cdn-icons-png.flaticon.com/512/56/56763.png" alt="菜單" />
+          <img className="Home-menu-icon" src={menuIcon} alt="菜單" />
         </div>
-        { category.categoryIsVisible ? (
+        { isCategoryMenuOpen && (
           <div className="Home-categorymenu-container">
             <CategoryList />
           </div>
-        )
-          : null}
+        )}
+
+        {/* search */}
         <div className="Home-post-search-box">
           <input
             type="text"
@@ -51,11 +59,13 @@ function PostsList() {
             onChange={(e) => setSearch(e.target.value)}
           />
           <div onClick={keywordSearchHandler} className="Home-post-search-image-container">
-            <img className="Home-post-search-image" src="https://cdn-icons-png.flaticon.com/128/151/151773.png" alt="搜尋" />
+            <img className="Home-post-search-image" src={searchIcon} alt="搜尋" />
           </div>
         </div>
       </div>
-      { posts.items.length > 0 ? posts.items.map((item) => (
+
+      {/* posts */}
+      { posts.length > 0 ? posts.map((item) => (
         <PostItem key={item.id} item={item} />
       )) : <Noposts />}
     </div>

@@ -1,65 +1,77 @@
 import React, { useRef } from "react";
-
 import PropTypes from "prop-types";
 import classes from "./ToolBar.module.css";
+import boldIcon from "../../assets/icons/bold.png";
+import italicIcon from "../../assets/icons/italic.png";
+import underlineIcon from "../../assets/icons/underline.png";
+import imageIcon from "../../assets/icons/image.png";
+import undoIcon from "../../assets/icons/undo.png";
 
-function ToolBar({ handleTogggleClick, handleInsertImage, undoHandler }) {
+function ToolBar({ onToggle, onInsertImage, onUndo }) {
   const imageInput = useRef();
 
-  const onClickInsertImage = () => {
+  const handleImageClick = () => {
     imageInput.current.click();
   };
 
-  const InputImageChange = () => {
-    const files = imageInput.current.files || [];
-    if (files.length > 0) {
-      const file = files[0];
-      handleInsertImage(file);
+  const handleImageChange = () => {
+    const file = imageInput.current.files?.[0];
+    if (file) {
+      onInsertImage(file);
     }
   };
 
   return (
     <div className={classes.toolbar}>
       <div
-        onMouseDown={(e) => handleTogggleClick(e, "BOLD")}
-        className={classes["toolbar-box"]}
-      >
-        <img
-          className={classes["toolbar-img"]}
-          src="https://cdn-icons-png.flaticon.com/512/5099/5099193.png"
-          alt=""
-        />
-      </div>
-      <div
-        onMouseDown={(e) => handleTogggleClick(e, "ITALIC")}
-        className={classes["toolbar-box"]}
-      >
-        <img
-          className={classes["toolbar-img"]}
-          src="https://cdn-icons-png.flaticon.com/128/5099/5099214.png"
-          alt=""
-        />
-      </div>
-      <div
-        onMouseDown={(e) => handleTogggleClick(e, "UNDERLINE")}
-        className={classes["toolbar-box"]}
-      >
-        <img
-          className={classes["toolbar-img"]}
-          src="https://cdn-icons-png.flaticon.com/512/5099/5099204.png"
-          alt=""
-        />
-      </div>
-      <div
         onMouseDown={(e) => {
           e.preventDefault();
-          onClickInsertImage();
+          onToggle("BOLD");
         }}
         className={classes["toolbar-box"]}
       >
         <img
           className={classes["toolbar-img"]}
-          src="https://cdn-icons-png.flaticon.com/512/739/739249.png"
+          src={boldIcon}
+          alt="bold"
+        />
+      </div>
+      <div
+        onMouseDown={(e) => {
+          e.preventDefault();
+          onToggle("ITALIC");
+        }}
+        className={classes["toolbar-box"]}
+      >
+        <img
+          className={classes["toolbar-img"]}
+          src={italicIcon}
+          alt="italic"
+        />
+      </div>
+      <div
+        onMouseDown={(e) => {
+          e.preventDefault();
+          onToggle("UNDERLINE");
+        }}
+        className={classes["toolbar-box"]}
+      >
+        <img
+          className={classes["toolbar-img"]}
+          src={underlineIcon}
+          alt="underline"
+        />
+      </div>
+      <div
+        onMouseDown={(e) => {
+          e.preventDefault();
+          handleImageClick();
+        }}
+        className={classes["toolbar-box"]}
+      >
+        <img
+          className={classes["toolbar-img"]}
+          src={imageIcon}
           alt=""
         />
       </div>
@@ -67,17 +79,20 @@ function ToolBar({ handleTogggleClick, handleInsertImage, undoHandler }) {
         accept="image/*"
         type="file"
         ref={imageInput}
-        onChange={InputImageChange}
-        style={{ display: "none" }}
+        onChange={handleImageChange}
+        hidden
       />
       <div
-        onMouseDown={undoHandler}
+        onMouseDown={(e) => {
+          e.preventDefault();
+          onUndo();
+        }}
         className={classes["toolbar-box"]}
       >
         <img
           className={classes["toolbar-img"]}
-          src="https://cdn-icons-png.flaticon.com/512/44/44426.png"
-          alt=""
+          src={undoIcon}
+          alt="undo"
         />
       </div>
     </div>
@@ -85,9 +100,9 @@ function ToolBar({ handleTogggleClick, handleInsertImage, undoHandler }) {
 }
 
 ToolBar.propTypes = {
-  handleTogggleClick: PropTypes.func.isRequired,
-  handleInsertImage: PropTypes.func.isRequired,
-  undoHandler: PropTypes.func.isRequired,
+  onToggle: PropTypes.func.isRequired,
+  onInsertImage: PropTypes.func.isRequired,
+  onUndo: PropTypes.func.isRequired,
 };
 
 export default ToolBar;

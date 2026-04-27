@@ -19,39 +19,59 @@ import { db } from "../firebaseConfig";
 import usePostContent from "../hooks/usePostContent";
 import Loading from "../components/UI/Loading";
 import Comment from "../components/Comment/Comment";
-import decorator from "../components/Editor/mediaDecorator";
+import mediaBlockRenderer from "../components/Editor/mediaBlockRenderer";
+import postOptionsIcon from "../assets/icons/post-options.png";
+import likeCountIcon from "../assets/icons/like.png";
+import likeButtonIcon from "../assets/icons/like-outline.png";
+import likeButtonActiveIcon from "../assets/icons/like-filled.png";
+import commentIcon from "../assets/icons/comment.png";
+import collectButtonIcon from "../assets/icons/bookmark-outline.png";
+import collectButtonActiveIcon from "../assets/icons/bookmark-filled.png";
+import defaultAvatar from "../assets/icons/default-avatar.png";
 
 function Post() {
   const { postId } = useParams();
   const navigate = useNavigate();
-  const currentUser = useSelector((state) => state.user.user);
+  const { auth: authUser } = useSelector((state) => state.user);
   const { isLoading: LoadPostContent, data: post } = usePostContent(postId);
   const [isPostMenu, setIsPostMenu] = useState(false);
-  const isLiked = currentUser ? post?.likeby?.includes(currentUser.uid) : false;
-  const isCollected = currentUser
-    ? post?.collectby?.includes(currentUser.uid)
-    : false;
   const [editorState, setEditorState] = useState(() => EditorState.createEmpty());
 
+  const author = post?.author || {};
+  const currentUid = authUser?.uid;
+
+  const isOwner = currentUid && currentUid === author.uid;
+  const isLiked = currentUid ? post?.likeby?.includes(currentUid) : false;
+  const isCollected = currentUid ? post?.collectby?.includes(currentUid) : false;
+
   useEffect(() => {
-    if (post) {
-      const data = post.stateContent;
-      if (data) {
-        const contentState = convertFromRaw(JSON.parse(data));
-        setEditorState(EditorState.createWithContent(contentState, decorator));
-      }
-    }
+    if (!post?.stateContent) return;
+
+    const content = convertFromRaw(JSON.parse(post.stateContent));
+    setEditorState(EditorState.createWithContent(content));
   }, [post]);
 
-  const toggle = (isActive, field) => {
-    if (isActive) {
-      updateDoc(doc(db, `posts/${postId}`), {
-        [field]: arrayRemove(currentUser.uid),
+  useEffect(() => {
+    const handleClickOutside = () => setIsPostMenu(false);
+
+    if (isPostMenu) {
+      window.addEventListener("click", handleClickOutside);
+    }
+
+    return () => {
+      window.removeEventListener("click", handleClickOutside);
+    };
+  }, [isPostMenu]);
+
+  const toggle = async (isActive, field) => {
+    if (!currentUid) return;
+
+    try {
+      await updateDoc(doc(db, `posts/${postId}`), {
+        [field]: isActive ? arrayRemove(currentUid) : arrayUnion(currentUid),
       });
-    } else {
-      updateDoc(doc(db, `posts/${postId}`), {
-        [field]: arrayUnion(currentUser.uid),
-      });
+    } catch (err) {
+      console.error(err);
     }
   };
 
@@ -64,10 +84,6 @@ function Post() {
     navigate(-1);
   };
 
-  const handlePostMenu = () => {
-    setIsPostMenu((pre) => !pre);
-  };
-
   return (
     <div className="Post-box">
       {LoadPostContent ? (
@@ -77,71 +93,86 @@ function Post() {
           <div className="Post-background" />
           <div className="Post-content-box">
             <div className="Post-content-container">
-              {currentUser?.uid === post?.author?.uid && (
+              {/* owner menu */}
+              {isOwner && (
                 <>
                   <div
-                    onClick={() => handlePostMenu()}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setIsPostMenu((pre) => !pre);
+                    }}
                     className="Post-posts-menu-icon-container"
                   >
                     <img
                       className="Post-posts-menu-icon"
-                      src="https://cdn-icons-png.flaticon.com/512/1160/1160515.png"
+                      src={postOptionsIcon}
                       alt="選項"
                     />
                   </div>
-                  {isPostMenu ? (
+                  {isPostMenu && (
                     <div className="Post-posts-menu-box">
-                      <div onClick={() => postEdit()}>編輯</div>
-                      <div onClick={() => postDelete()}>刪除</div>
+                      <div onClick={postEdit}>編輯</div>
+                      <div onClick={postDelete}>刪除</div>
                       <div className="Post-comments-box-cube" />
                     </div>
-                  ) : null}
+                  )}
                 </>
               )}
+
+              {/* author info */}
               <Link
-                to={`/personal/${post?.author?.uid}`}
+                to={author.uid ? `/personal/${author.uid}` : "#"}
                 className="Post-personal-information-container"
               >
                 <div className="Post-personal-information item">
                   <div className="Post-avatar-container">
                     <img
                       className="Post-avatar"
-                      src={post?.author?.photoURL}
-                      alt=""
+                      src={author.photoURL || defaultAvatar}
+                      alt="avatar"
                     />
                   </div>
                   <div className="Post-information-container">
-                    <div className="Post-name">{post?.author?.name}</div>
+                    <div className="Post-name">{author.name || "使用者"}</div>
                     <div className="Post-date">
                       {post?.categoryName}
                       ・
                       {post?.createTime
-                      && moment(post?.createTime.toDate()).format(
-                        "YYYY/MM/DD h:mm a",
-                      )}
+                        ? moment(post.createTime).format(
+                          "YYYY/MM/DD h:mm a",
+                        )
+                        : ""}
                     </div>
                   </div>
                 </div>
               </Link>
+
+              {/* content */}
               <div>
                 <div className="Post-title item">{post?.title}</div>
                 <div className="Post-text-container item">
-                  <Editor editorState={editorState} readOnly />
+                  <Editor
+                    editorState={editorState}
+                    readOnly
+                    blockRendererFn={mediaBlockRenderer}
+                  />
                 </div>
               </div>
+
+              {/* actions */}
               <div className="Post-like-message-container">
                 <div className="Post-like-icon-container">
                   <img
                     className="Post-like-message-icon"
-                    src="https://cdn-icons-png.flaticon.com/128/1029/1029132.png"
+                    src={likeCountIcon}
                     alt="讚"
                   />
                 </div>
-                <div>{post?.likeby?.length}</div>
+                <div>{post?.likeby?.length || 0}</div>
                 <div className="Post-message-icon-container">
                   <img
                     className="Post-like-message-icon"
-                    src="https://cdn-icons-png.flaticon.com/512/2190/2190552.png"
+                    src={commentIcon}
                     alt="留言"
                   />
                 </div>
@@ -154,8 +185,8 @@ function Post() {
                     className="Post-like-message-icon"
                     src={
                       isLiked
-                        ? "https://cdn-icons-png.flaticon.com/512/833/833472.png"
-                        : "https://cdn-icons-png.flaticon.com/512/833/833300.png"
+                        ? likeButtonActiveIcon
+                        : likeButtonIcon
                     }
                     alt="讚"
                   />
@@ -168,8 +199,8 @@ function Post() {
                     className="Post-like-message-icon"
                     src={
                       isCollected
-                        ? "https://cdn-icons-png.flaticon.com/512/758/758688.png"
-                        : "https://cdn-icons-png.flaticon.com/512/709/709496.png"
+                        ? collectButtonActiveIcon
+                        : collectButtonIcon
                     }
                     alt="收藏"
                   />

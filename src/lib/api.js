@@ -33,7 +33,7 @@ export const getPersonalPosts = async (req) => {
     (item) => ({
       ...item.data(),
       id: item.id,
-      createTime: item.data().createTime.toDate().toString(),
+      createTime: item.data().createTime?.toMillis?.(),
     }),
   );
   return data;
