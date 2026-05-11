@@ -1,6 +1,5 @@
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import { useParams, useSearchParams } from "react-router-dom";
-import { useSelector, useDispatch } from "react-redux";
 
 import "../Styles/Home.css";
 import CategoryList from "../components/Post/CategoryList";
@@ -8,25 +7,39 @@ import Loading from "../components/UI/Loading";
 import fetchPostsData from "../store/posts-action";
 import { uiActions } from "../store/ui-slice";
 import PostsList from "../components/Post/PostsList";
+import { useAppDispatch, useAppSelector } from "../store/hooks";
+import type { PostsQueryParams } from "../types/post";
 
 function Home() {
-  const { categoryPage } = useParams();
+  const { categoryPage } = useParams<{categoryPage: string}>();
   const [searchKeyword] = useSearchParams();
-  const dispatch = useDispatch();
-  const { status, error } = useSelector((state) => state.posts);
+  const dispatch = useAppDispatch();
+  const { status, error } = useAppSelector((state) => state.posts);
 
   useEffect(() => {
-    let queryString;
+    let params: PostsQueryParams;
 
     if (categoryPage === "all") {
-      queryString = "";
+      params = {
+        col: "posts",
+      };
     } else if (categoryPage === "search") {
-      queryString = { name: "keywords", condition: "array-contains", value: searchKeyword.get("query") };
+      params = {
+        col: "posts",
+        name: "keywords",
+        condition: "array-contains",
+        value: searchKeyword.get("query") ?? "",
+      };
     } else {
-      queryString = { name: "categoryId", condition: "==", value: `${categoryPage}` };
+      params = {
+        col: "posts",
+        name: "categoryId",
+        condition: "==",
+        value: categoryPage ?? "",
+      };
     }
 
-    dispatch(fetchPostsData("posts", queryString));
+    dispatch(fetchPostsData(params));
     dispatch(uiActions.closeCategoryMenu());
   }, [categoryPage, searchKeyword, dispatch]);
 

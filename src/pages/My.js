@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import "../Styles/Personal.css";
 import { useSelector } from "react-redux";
 import useHttp from "../hooks/use-http";
-import { getPersonalPosts } from "../lib/api";
+import { getPosts } from "../lib/api";
 import settingIcon from "../assets/icons/setting.png";
 import ProfileLayout from "../Layouts/ProfileLayout";
 
@@ -18,14 +18,14 @@ function My() {
     isLoading: isLoadingMyPosts,
     data: myPosts,
     error: myPostsError,
-  } = useHttp(getPersonalPosts, true, []);
+  } = useHttp(getPosts, true, []);
 
   const {
     sendRequest: fetchMyCollectPosts,
     isLoading: isLoadingMyCollect,
     data: myCollectPosts,
     error: myCollectPostsError,
-  } = useHttp(getPersonalPosts, false, []);
+  } = useHttp(getPosts, false, []);
 
   useEffect(() => {
     if (!uid) return;

@@ -1,36 +1,41 @@
-import React, { useState } from "react";
+import { useState } from "react";
 
 import { doc, setDoc } from "firebase/firestore";
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   signInWithPopup,
+  type User,
+  type AuthError,
 } from "firebase/auth";
-import { useDispatch } from "react-redux";
+import { useAppDispatch } from "../../store/hooks";
 import { userActions } from "../../store/user-slice";
 import { db, auth, provider } from "../../firebaseConfig";
 import "../../Styles/Login.css";
 import eyeOpenIcon from "../../assets/icons/eye-open.png";
 import eyeCloseIcon from "../../assets/icons/eye-close.png";
 import googleIcon from "../../assets/icons/google.png";
+import { UserProfile } from "../../types/user";
 
 const DEFAULT_AVATAR = "https://cdn-icons-png.flaticon.com/512/847/847969.png";
 
-function Loginbox() {
-  const [action, setAction] = useState("login");
-  const [email, setEmail] = useState("email@gmail.com");
-  const [password, setPassword] = useState("password");
-  const [errorMessage, setErrorMessage] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
-  const dispatch = useDispatch();
+type ActionMode = "login" | "register";
 
-  const buildUserData = (user) => ({
+function Loginbox() {
+  const [action, setAction] = useState<ActionMode>("login");
+  const [email, setEmail] = useState<string>("email@gmail.com");
+  const [password, setPassword] = useState<string>("password");
+  const [errorMessage, setErrorMessage] = useState<string>("");
+  const [showPassword, setShowPassword] = useState<boolean>(false);
+  const dispatch = useAppDispatch();
+
+  const buildUserData = (user: User): UserProfile => ({
     name: user.displayName || "使用者",
     photoURL: user.photoURL || DEFAULT_AVATAR,
     email: user.email,
   });
 
-  const syncUser = async (user) => {
+  const syncUser = async (user: User): Promise<void> => {
     const data = buildUserData(user);
 
     // 更新 Firestore
@@ -48,26 +53,16 @@ function Loginbox() {
     }));
   };
 
-  const toggleMode = (mode) => {
+  const toggleMode = (mode: ActionMode) => {
     setAction(mode);
     setErrorMessage("");
   };
 
-  const togglePassword = () => {
+  const togglePassword = (): void => {
     setShowPassword((prev) => !prev);
   };
 
-  // Google login
-  const signInWithGoogle = async () => {
-    try {
-      const res = await signInWithPopup(auth, provider);
-      await syncUser(res.user);
-    } catch (err) {
-      setErrorMessage("Google 登入失敗");
-    }
-  };
-
-  const handleError = (code) => {
+  const handleError = (code: string): void => {
     switch (code) {
       case "auth/user-not-found":
         setErrorMessage("*信箱不存在*");
@@ -89,7 +84,19 @@ function Loginbox() {
     }
   };
 
-  const onSubmit = async (e) => {
+  // Google login
+  const signInWithGoogle = async (): Promise<void> => {
+    try {
+      const res = await signInWithPopup(auth, provider);
+      await syncUser(res.user);
+    } catch (error) {
+      // setErrorMessage("Google 登入失敗");
+      const authError = error as AuthError;
+      handleError(authError.code);
+    }
+  };
+
+  const onSubmit = async (e: React.FormEvent<HTMLFormElement>): Promise<void> => {
     e.preventDefault();
     setErrorMessage("");
 
@@ -105,7 +112,9 @@ function Loginbox() {
         await syncUser(res.user);
       }
     } catch (error) {
-      handleError(error.code);
+      const authError = error as AuthError;
+
+      handleError(authError.code);
     }
   };
 

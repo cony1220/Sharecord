@@ -8,7 +8,13 @@
         "corejs": 3.49
       }
     ],
-    "@babel/preset-react"
+    [
+      "@babel/preset-react",
+      {
+        "runtime": "automatic"
+      }
+    ],
+    "@babel/preset-typescript"
   ],
   "plugins": []
 }

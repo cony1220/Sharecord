@@ -1,8 +1,7 @@
-import React, { useEffect } from "react";
+import { lazy, useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
-import { onAuthStateChanged } from "firebase/auth";
-import { useDispatch } from "react-redux";
+import { onAuthStateChanged, type User } from "firebase/auth";
 import { userActions } from "./store/user-slice";
 import { auth } from "./firebaseConfig";
 import Home from "./pages/Home";
@@ -16,8 +15,10 @@ import EditProfile from "./pages/EditProfile";
 import My from "./pages/My";
 import MainLayout from "./Layouts/MainLayout";
 import { getDocumentData } from "./lib/api";
+import { useAppDispatch } from "./store/hooks";
+import type { UserProfile } from "./types/user";
 
-const Createpost = React.lazy(
+const Createpost = lazy(
   () => import(
     /* webpackChunkName: "createpost" */
     /* webpackPrefetch: true */
@@ -25,7 +26,7 @@ const Createpost = React.lazy(
   ),
 );
 
-const Post = React.lazy(
+const Post = lazy(
   () => import(
     /* webpackChunkName: "post" */
     /* webpackPrefetch: true */
@@ -33,7 +34,7 @@ const Post = React.lazy(
   ),
 );
 
-const Edit = React.lazy(
+const Edit = lazy(
   () => import(
     /* webpackChunkName: "edit" */
     /* webpackPrefetch: true */
@@ -42,10 +43,10 @@ const Edit = React.lazy(
 );
 
 function App() {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   useEffect(() => {
-    const unsub = onAuthStateChanged(auth, async (user) => {
+    const unsub = onAuthStateChanged(auth, async (user: User | null) => {
       if (!user) {
         dispatch(userActions.clearUser());
         return;
@@ -61,9 +62,11 @@ function App() {
 
       try {
         // profile（Firestore）
-        const profile = await getDocumentData(`users/${user.uid}`);
+        const profile = await getDocumentData<UserProfile>(`users/${user.uid}`);
 
-        dispatch(userActions.setProfile({ ...profile }));
+        if (profile) {
+          dispatch(userActions.setProfile(profile));
+        }
       } catch (err) {
         console.error("fetch profile error", err);
       }
@@ -95,7 +98,7 @@ function App() {
           </Route>
 
           {/* 404 */}
-          <Route path="*" element={<NoMatch status={404} />} />
+          <Route path="*" element={<NoMatch />} />
         </Route>
       </Routes>
     </Router>

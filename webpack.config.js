@@ -3,6 +3,7 @@ const webpack = require("webpack");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const { BundleAnalyzerPlugin } = require("webpack-bundle-analyzer");
+const ForkTsCheckerWebpackPlugin = require("fork-ts-checker-webpack-plugin");
 const createEnv = require("./webpack/env");
 
 const isProd = process.env.NODE_ENV === "production";
@@ -10,7 +11,7 @@ const isProd = process.env.NODE_ENV === "production";
 module.exports = {
   // webpack 模式（會影響預設優化）
   mode: isProd ? "production" : "development",
-  entry: "./src/index.js",
+  entry: "./src/index.tsx",
   output: {
     publicPath: "/", // 所有資源的 base path
     filename: "[name].[contenthash].bundle.js",
@@ -28,6 +29,9 @@ module.exports = {
     hot: true,
     compress: true,
     historyApiFallback: true,
+  },
+  resolve: {
+    extensions: [".tsx", ".ts", ".jsx", ".js"],
   },
   module: {
     rules: [
@@ -71,7 +75,7 @@ module.exports = {
         exclude: /\.module\.css$/i,
       },
       {
-        test: /\.m?js$/,
+        test: /\.[jt]sx?$/,
         exclude: /node_modules/,
         use: {
           loader: "babel-loader",
@@ -90,6 +94,9 @@ module.exports = {
 
     // 注入環境變數（例如 process.env.API_URL）
     new webpack.DefinePlugin(createEnv()),
+
+    // 型別檢查
+    new ForkTsCheckerWebpackPlugin(),
 
     // production 才抽 CSS
     ...(isProd

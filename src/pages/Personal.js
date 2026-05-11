@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom";
 
 import "../Styles/Personal.css";
 import useHttp from "../hooks/use-http";
-import { getDocumentData, getPersonalPosts } from "../lib/api";
+import { getDocumentData, getPosts } from "../lib/api";
 import ProfileLayout from "../Layouts/ProfileLayout";
 
 function Personal() {
@@ -21,7 +21,7 @@ function Personal() {
     isLoading: isLoadingPosts,
     data: posts,
     error: postsError,
-  } = useHttp(getPersonalPosts, true, []);
+  } = useHttp(getPosts, true, []);
 
   useEffect(() => {
     if (!userId) return;
