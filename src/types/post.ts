@@ -24,7 +24,7 @@ export type Post = {
 
   firstPicture: string;
 
-  createTime: number;
+  createTime: number | null;
 };
 
 // DB 原始資料

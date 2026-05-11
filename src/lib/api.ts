@@ -56,7 +56,7 @@ export const getPosts = async ({
       ...data,
       id: item.id,
       createTime:
-        data.createTime instanceof Timestamp ? data.createTime.toMillis() : 0,
+        data.createTime instanceof Timestamp ? data.createTime.toMillis() : null,
     } satisfies Post;
   });
 };
